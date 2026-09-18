@@ -21,7 +21,7 @@ export async function getCliente(id) {
 
 export async function saveCliente(cliente) {
   const payload = { ...cliente }
-  if (!payload.id) payload.user_id = await uid()
+  payload.user_id = await uid()
   const { data, error } = await supabase.from('clientes').upsert(payload).select().single()
   if (error) throw error
   return data
@@ -48,7 +48,7 @@ export async function getAnamnese(clienteId, tipo) {
 
 export async function saveAnamnese(anamnese) {
   const payload = { ...anamnese, updated_at: new Date().toISOString() }
-  if (!payload.id) payload.user_id = await uid()
+  payload.user_id = await uid()
   const { data, error } = await supabase
     .from('anamneses')
     .upsert(payload, { onConflict: 'cliente_id,tipo' })
@@ -73,7 +73,7 @@ export async function getAtendimento(id) {
 
 export async function saveAtendimento(at) {
   const payload = { ...at }
-  if (!payload.id) payload.user_id = await uid()
+  payload.user_id = await uid()
   const { data, error } = await supabase.from('atendimentos').upsert(payload).select().single()
   if (error) throw error
   return data
@@ -106,7 +106,7 @@ export async function getAgendamento(id) {
 export async function saveAgendamento(ag) {
   const payload = { ...ag }
   delete payload.cliente // campo derivado do join, não é coluna
-  if (!payload.id) payload.user_id = await uid()
+  payload.user_id = await uid()
   const { data, error } = await supabase.from('agendamentos').upsert(payload).select().single()
   if (error) throw error
   return data
