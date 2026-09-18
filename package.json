@@ -1,0 +1,25 @@
+{
+  "name": "app-fichas",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "App de fichas de anamnese para limpeza de pele/dermaplaning e manicure",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check:db": "node scripts/check-db.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "jspdf": "^2.5.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.2",
+    "vite": "^5.4.8",
+    "vite-plugin-pwa": "^0.20.5"
+  }
+}
