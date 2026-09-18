@@ -143,7 +143,7 @@ a { color: var(--brand-strong); }
 .field:last-child { margin-bottom: 4px; }
 .field > label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14.5px; color: var(--ink); }
 .field input[type=text], .field input[type=tel], .field input[type=email],
-.field input[type=date], .field input[type=number], .field input[type=password],
+.field input[type=date], .field input[type=time], .field input[type=number], .field input[type=password],
 .field textarea, .field select {
   width: 100%; padding: 13px 14px; border: 1.5px solid var(--line-strong); border-radius: 12px;
   background: var(--surface); color: var(--ink); transition: border-color .15s, box-shadow .15s;
