@@ -6,6 +6,10 @@ test('hojeISO usa a data local, não UTC', (t) => {
   t.mock.timers.enable({ apis: ['Date'], now: new Date(2026, 10, 5, 23, 30).getTime() })
   assert.equal(hojeISO(), '2026-11-05')
 })
+test('hojeISO: 00:30 local ainda é o dia local (falha em UTC+ se usar UTC)', (t) => {
+  t.mock.timers.enable({ apis: ['Date'], now: new Date(2026, 10, 6, 0, 30).getTime() })
+  assert.equal(hojeISO(), '2026-11-06')
+})
 
 test('addDias: virada de mês, de ano, ida e volta, 29/02', () => {
   assert.equal(addDias('2026-01-31', 1), '2026-02-01')
