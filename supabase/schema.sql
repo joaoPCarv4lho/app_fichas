@@ -4,7 +4,8 @@
 --  Como usar:
 --   1. No Supabase, abra seu projeto > SQL Editor > New query.
 --   2. Cole TODO este arquivo e clique em "Run".
---   Isso cria as tabelas, as regras de segurança (RLS) e os buckets de fotos.
+--   Isso cria as tabelas, liga o RLS e cria o bucket de fotos.
+--   3. Em seguida rode o roles.sql (cria as políticas de acesso) e os demais.
 -- ============================================================================
 
 -- ---------- Tabela: clientes ------------------------------------------------
@@ -58,24 +59,11 @@ alter table public.clientes     enable row level security;
 alter table public.anamneses    enable row level security;
 alter table public.atendimentos enable row level security;
 
-do $$
-begin
-  -- clientes
-  if not exists (select 1 from pg_policies where tablename='clientes' and policyname='clientes_todas') then
-    create policy clientes_todas on public.clientes
-      for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
-  end if;
-  -- anamneses
-  if not exists (select 1 from pg_policies where tablename='anamneses' and policyname='anamneses_todas') then
-    create policy anamneses_todas on public.anamneses
-      for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
-  end if;
-  -- atendimentos
-  if not exists (select 1 from pg_policies where tablename='atendimentos' and policyname='atendimentos_todas') then
-    create policy atendimentos_todas on public.atendimentos
-      for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
-  end if;
-end $$;
+-- As políticas de acesso (select/insert/update/delete) são criadas pelo roles.sql,
+-- que deve rodar logo depois deste arquivo. Até lá o RLS está ligado e SEM
+-- políticas: ninguém acessa nada (seguro por padrão). Este arquivo não cria mais
+-- a política "faz tudo" (*_todas), para que re-rodá-lo nunca devolva a permissão
+-- de excluir a quem não é admin.
 
 -- ---------- Storage: bucket de fotos (antes/depois) -------------------------
 insert into storage.buckets (id, name, public)
