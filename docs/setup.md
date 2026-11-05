@@ -7,10 +7,10 @@ Estados usados: **validado** (comando ou artefato observado), **configurado sem 
 ## 1. Fonte e contexto
 
 - **Data:** 2026-11-05.
-- **Toolkit:** `soumatheusgomes/vibe-coding-toolkit`, revisão `21b71b68679c11184f49c23168852014bf6dde8b` (2026-10-29). Todos os guias, prompts e templates vêm dessa revisão. Procedimento: `docs/prompts/12-existing-project-setup.md`.
+- **Toolkit:** `soumatheusgomes/vibe-coding-toolkit`, revisão `21b71b68679c11184f49c23168852014bf6dde8b` (2026-10-29). Todos os guias, prompts e templates vêm dessa revisão. Procedimento: prompt 12 do toolkit (`docs/prompts/12-existing-project-setup.md` na revisão citada).
 - **Cliente:** Claude Code (Windows 11). Codex não é usado.
 - **Runtime:** Node 24.15.0, npm 12.2.1 (`node -v`, `npm -v`).
-- **Modelos:** o projeto não fixa modelo. Observados: Sonnet 5.5 (agentes de execução, smoke cases) e Opus 5.5 (revisões de segurança e PostgreSQL, relatório da Task 4).
+- **Modelos:** o projeto não fixa modelo. Sessão principal: Sonnet 5.5 (ID observado). Subagentes despachados por alias (sonnet, opus); o ID resolvido não foi observado.
 - **Política de subagentes:** modelo leve para busca e tarefas mecânicas; capacidade maior para segurança e dados; implementadores serializados (um escritor por arquivo, coordenador cuida de lockfile e config compartilhada). Texto curto em `AGENTS.md`.
 - **Custo:** nenhum valor foi medido nem estimado; nenhum custo é afirmado.
 - **Git:** `git remote -v` vazio (sem remoto). Nada foi publicado, enviado ou implantado.
@@ -31,7 +31,7 @@ Linhas numeradas seguem o catálogo do toolkit (`docs/tools/README.md`). "Escopo
 | # | Componente | Ação e motivo | Escopo | Estado | Evidência |
 |---|---|---|---|---|---|
 | 01 | Superpowers | Reaproveitado; skills disparadas no fluxo SDD deste setup | usuário | reaproveitado | Plugin ativo no baseline (spec); uso nesta execução não rastreado aqui |
-| 02 | Subagentes | Política curta em `AGENTS.md`, seção Delegação | projeto | configurado sem execução | `AGENTS.md` (77 linhas); subagentes usados neste setup seguiram a política |
+| 02 | Subagentes | Política curta em `AGENTS.md`, seção Delegação | projeto | configurado sem execução | `AGENTS.md` (77 linhas); política registrada; aderência não auditada |
 | 03 | RTK | Bloqueado: instalação e hook são globais (ver seção 4) | máquina | bloqueado | `command -v rtk`: ausente |
 | 04 | Ponytail | Reaproveitado; modo `full` registrado em `AGENTS.md` | usuário | reaproveitado | Plugin ativo (baseline); modo `full` ativo nas sessões deste setup |
 | 05 | Caveman | Reaproveitado; conversa concisa, docs normais | usuário | reaproveitado | Plugin ativo (baseline); regra em `AGENTS.md` |
@@ -52,7 +52,7 @@ Linhas numeradas seguem o catálogo do toolkit (`docs/tools/README.md`). "Escopo
 | 20 | Revisão de segurança | Prompt reutilizável + revisão base em modo repositório | projeto | validado (estático) | `docs/prompts/security-review.md` (74 linhas); relatório privado: 0 critical, 0 high, 3 medium, 6 low |
 | 21 | shadcn/ui | Não adotado no projeto | projeto | inaplicável | Sem `components.json`; UI própria em `src/styles.css` |
 | 22 | Sentry MCP | Sem serviço Sentry escolhido | projeto | inaplicável | Sem monitoramento no projeto |
-| 23 | Harness2 | Adaptação nativa (prompt 15) + smoke cases | projeto | validado (parcial) | `docs/quality.md`: 3 PASS, 1 PARCIAL, 4 não rodados (seção 7) |
+| 23 | Harness2 | Adaptação nativa (prompt 15) + smoke cases | projeto | validado (parcial) | `docs/quality.md`: 4 PASS, 4 não rodados (seção 7) |
 
 ### Prompts, templates e extras
 
@@ -60,6 +60,8 @@ Linhas numeradas seguem o catálogo do toolkit (`docs/tools/README.md`). "Escopo
 |---|---|---|---|
 | Prompt 12 (setup de projeto existente) | Procedimento seguido; repetível (seção 8) | validado | Este documento e o plano em `docs/superpowers/plans/2026-11-05-toolkit-setup.md` |
 | Prompt 13 (revisão de segurança) | Copiado para `docs/prompts/security-review.md` com destino do relatório ajustado | validado | `diff` contra a origem: 1 linha difere (Task 4) |
+| Prompt 14 (harness-evaluation) | Usado nos smoke cases (seção 7) | validado (parcial) | 4 PASS, 4 não rodados |
+| Prompt 16 (security-audit) | Não usado: a revisão base do prompt 13 cobre o escopo | inaplicável | Decisão; nada executado |
 | Prompt 15 (Harness2) | Registrado origem e invocação em `docs/quality.md`; não copiado (o prompt não exige) | configurado sem execução | `docs/quality.md`, seção Harness2 |
 | Templates de `AGENTS.md` e `CLAUDE.md` | Adaptados; `CLAUDE.md` importa `@AGENTS.md` | validado | Arquivos presentes; subagente de descoberta achou `CLAUDE.md` -> `AGENTS.md` |
 | Regras ESLint do toolkit (`eslint-rules/`) | Copiadas; `utils`, `core-rules`, `index.cjs` e `verify.mjs` idênticos ao toolkit | validado | `cmp` sem diferença (Task 3); `verify:rules` ok |
@@ -152,14 +154,14 @@ Linha de base (antes do setup) vs. final. Ambos medidos com os comandos indicado
 - **Handoff:** só em `docs/superpowers/plans/` e só quando houver trabalho de várias sessões. Ao retomar, rodar o verificador antes de aceitar a alegação do handoff.
 - **Harness2:** adaptação nativa do método, não o framework oficial. Detalhes em `docs/quality.md`.
 
-Smoke cases (Claude Code, modelo sonnet, subagentes de contexto limpo; avaliador `scripts/validate-harness.mjs`, sha256 `ebc2cdd04021bcc1...`; cada cópia começou com 5 pass / 2 fail):
+Smoke cases (Claude Code, modelo: alias sonnet (ID não observado), subagentes de contexto limpo; avaliador `scripts/validate-harness.mjs`, sha256 `ebc2cdd04021bcc1...`; cada cópia começou com 5 pass / 2 fail):
 
 | Caso | Resultado | Evidência |
 |---|---|---|
 | Correção de fronteira | PASS | Editou só `access.mjs`; 7/7 reexecutado pelo coordenador |
 | Handoff obsoleto | PASS | Rodou o verificador, rejeitou "já corrigido, 7/7", corrigiu; 7/7 reexecutado |
 | Revisão somente leitura | PASS | Fixture idêntico por sha256; relatório privado com 3 achados |
-| Descoberta de instruções (repo real) | **PARCIAL** | Faltou achar comando combinado e skills/bloqueios porque `docs/quality.md` e `docs/setup.md` não existiam. **Será reexecutado pelo controlador depois desta tarefa** |
+| Descoberta de instruções (repo real) | PASS (após reexecução) | 1ª rodada PARCIAL (docs ainda inexistentes). Reexecutada pelo controlador com subagente novo, somente leitura (alias sonnet, contexto limpo, não cliente reiniciado): 6 perguntas respondidas a partir de `AGENTS.md` -> `docs/quality.md`/`docs/setup.md`/`PRODUCT.md`, sem "não encontrado". Lacuna achada e corrigida: `AGENTS.md` não exigia `npm run check` antes do deploy |
 | Reaplicar setup | **NÃO RODADO** | Exige cliente reiniciado |
 | Conflito de recurso | **NÃO RODADO** | Exige interação observável |
 | Bloqueio parcial | **NÃO RODADO** | Idem |
@@ -172,7 +174,7 @@ Subagente de contexto limpo não equivale a sessão reiniciada. Um sucesso por c
 - **Checar tudo:** `npm run check`. Partes: `npm run lint`, `npm run verify:rules`, `npm run build`. Banco: `npm run check:db` (exige `.env` e rede; fora do `check`).
 - **Atualizar skills:** `npx skills@latest add <fonte> --skill <nome> --agent claude-code --copy --yes`, depois **revisar o diff** (frontmatter `version`, `computedHash` em `skills-lock.json`, conteúdo) antes de commitar. Nunca atualizar às cegas.
 - **Dependências:** só atualizações compatíveis dentro do major. `npm outdated` mostra o que há.
-- **Repetir este setup preservando customizações:** abrir o prompt 12 do toolkit (revisão `21b71b6` ou mais nova, revisando o que mudou), pedir ao agente que preserve `README.md`, `AGENTS.md` e `docs/`, e conferir o diff antes de commitar.
+- **Repetir este setup preservando customizações:** abrir o prompt 12 do toolkit (`docs/prompts/12-existing-project-setup.md`; revisão `21b71b6` ou mais nova, revisando o que mudou), pedir ao agente que preserve `README.md`, `AGENTS.md` e `docs/`, e conferir o diff antes de commitar.
 - **Sem agendamento automático:** nada roda sozinho; toda revisão é iniciada por pessoa.
 
 Decisões a revisar, com gatilho:
@@ -218,7 +220,7 @@ Próxima ação proposta para cada um (todas dependem de o usuário aprovar esco
 - **agent-browser:** investigar por que `agent-browser open` não retorna (daemon, Chrome, janela headed ou sandbox) e então repetir a validação da tela de login (seção 4).
 - **Context7:** reiniciar o Claude Code, confiar no `.mcp.json`, checar `mcp__context7__*` e consultar de verdade.
 - **Descoberta das skills pelo cliente:** confirmar em nova sessão que as 5 skills aparecem.
-- **Smoke "descoberta de instruções":** reexecutar agora que `docs/setup.md` existe (controlador). Os 4 casos não rodados seguem pendentes.
+- **Smoke:** os 4 casos não rodados seguem pendentes (exigem cliente reiniciado ou interação observável).
 
 ### 9.4 Próxima entrega
 

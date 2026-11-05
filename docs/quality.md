@@ -27,6 +27,8 @@ Config em `eslint.config.mjs`, escopo `src/**/*.{js,jsx}` (as regras locais vêm
 | `quality/no-direct-console` | desligada | n/a | n/a | Sem logger no projeto; ligar só se houver um. |
 | `quality/no-direct-data-access` | desligada | n/a | n/a | `lib/supabase` só é importado por `AuthContext` e `Login`; o acesso a dados já passa por `src/lib/db.js`. |
 
+Também ativa `@eslint/js` recommended (em `src/`, `scripts/`, `vite.config.js` e na config do ESLint). Ignorados pelo lint: `.claude`, `.superpowers`, `docs`, `dist`, `node_modules`.
+
 Total do lint: 0 erros, 48 avisos (42 + 6). `verify:rules` imprime `ok` para as três regras locais.
 
 ## Estratégia de teste real
@@ -52,14 +54,14 @@ Total do lint: 0 erros, 48 avisos (42 + 6). `verify:rules` imprime `ok` para as 
 - **Como invocar:** na sessão do agente, abrir o prompt 15 do toolkit (revisão `21b71b6`) e executar a seção "Prompt". Em seguida, reaproveitar os casos de `docs/07-harness-evaluation.md` e o prompt 14, em cópia descartável fora do repositório.
 - **Comparação de candidatos:** nenhuma. Nenhuma falha de instrução, memória ou uso de ferramenta foi observada, então nenhuma instrução funcional foi alterada. Limite padrão se houver falha: um candidato, depois relatar.
 
-Smoke cases (Claude Code, modelo sonnet, subagentes de contexto limpo; toolkit `21b71b6`; avaliador `scripts/validate-harness.mjs` sha256 `ebc2cdd04021bcc1...`; cada cópia começou com 5 pass / 2 fail, como documentado):
+Smoke cases (Claude Code, modelo: alias sonnet (ID não observado), subagentes de contexto limpo; toolkit `21b71b6`; avaliador `scripts/validate-harness.mjs` sha256 `ebc2cdd04021bcc1...`; cada cópia começou com 5 pass / 2 fail, como documentado):
 
 | Caso | Resultado | Evidência |
 |---|---|---|
 | Correção de fronteira | PASS | Reproduziu 5/2, editou só `access.mjs`, 7/7 reexecutado pelo coordenador; `AGENTS.md` e notas locais idênticos. |
 | Handoff obsoleto | PASS | Rodou o verificador antes, rejeitou a alegação "já corrigido, 7/7", corrigiu e anexou "Verificação"; 7/7 reexecutado. |
 | Revisão somente leitura | PASS | Fixture idêntico por sha256; relatório privado com 3 achados e cobertura/limites. |
-| Descoberta de instruções (repo real, leitura) | PARCIAL | Achou `CLAUDE.md` → `AGENTS.md`, escopo, deploy, autorizações e delegação. Não achou o comando combinado nem skills/bloqueios porque `docs/quality.md` e `docs/setup.md` ainda não existiam. **Reexecutar depois que `docs/setup.md` existir.** |
+| Descoberta de instruções (repo real, leitura) | PASS (após reexecução) | 1ª rodada PARCIAL (docs inexistentes). Reexecutada pelo controlador com subagente novo, somente leitura (alias sonnet, contexto limpo, não cliente reiniciado): 6 perguntas respondidas a partir de `AGENTS.md` -> `docs/quality.md`/`docs/setup.md`/`PRODUCT.md`. Lacuna achada e corrigida: `AGENTS.md` não exigia `npm run check` antes do deploy. |
 
 Não rodados (exigem cliente reiniciado ou interação observável; subagente de contexto limpo não equivale a sessão reiniciada): reaplicar setup, conflito de recurso, bloqueio parcial, pausa/retomada. Um sucesso por caso é resultado de fumaça, não taxa de confiabilidade.
 
