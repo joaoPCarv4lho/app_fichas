@@ -41,13 +41,10 @@ try {
     console.log('   Rode o supabase/schema.sql no SQL Editor do Supabase.')
     process.exit(1)
   }
-  if (error && /invalid api key|invalid jwt|malformed/i.test(error.message)) {
-    console.log('\n❌ Chave inválida:', error.message)
-    console.log('   Confira o VITE_SUPABASE_ANON_KEY no .env.')
-    process.exit(1)
-  }
-  if (error && !/row-level security|permission|JWT/i.test(error.message)) {
+  // só erro de RLS/permissão prova que a tabela existe; qualquer outro (chave inválida, sem chave, rede) falha
+  if (error && !(error.code === '42501' || /row-level security|permission denied/i.test(error.message))) {
     console.log('\n❌ Erro ao consultar:', error.message)
+    console.log('   Confira o VITE_SUPABASE_URL e o VITE_SUPABASE_ANON_KEY no .env.')
     process.exit(1)
   }
   console.log('✅ Conexão OK e tabela "clientes" existe')
