@@ -5,6 +5,7 @@ import { getCliente, saveCliente } from '../lib/db.js'
 import { useToast } from '../components/Toast.jsx'
 import { SkeletonDetail } from '../components/Skeleton.jsx'
 import ErroCarga from '../components/ErroCarga.jsx'
+import { mensagemDeErro } from '../lib/erros.js'
 
 const VAZIO = { nome: '', nascimento: '', whatsapp: '', email: '', como_conheceu: '', observacoes: '' }
 
@@ -48,7 +49,7 @@ export default function ClienteForm() {
       toast(id ? 'Alterações salvas' : 'Cliente cadastrada')
       navigate(`/cliente/${saved.id}`, { replace: true })
     } catch (err) {
-      setErro(err.message); setBusy(false)
+      setErro(mensagemDeErro(err)); setBusy(false)
     }
   }
 
@@ -86,8 +87,8 @@ export default function ClienteForm() {
                 <textarea value={c.observacoes} onChange={set('observacoes')} />
               </div>
             </div>
-            {erro && <div className="error-text">{erro}</div>}
             <div className="actionbar">
+              {erro && <div className="error-text" role="alert">{erro}</div>}
               <div className="actionbar-inner">
                 <button className="btn" disabled={busy}>{busy ? 'Salvando…' : 'Salvar'}</button>
               </div>

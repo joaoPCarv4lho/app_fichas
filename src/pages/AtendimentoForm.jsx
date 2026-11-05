@@ -5,6 +5,8 @@ import PhotoCapture from '../components/PhotoCapture.jsx'
 import { getAtendimento, saveAtendimento, deleteAtendimento, uploadFoto, signedUrl, removeFoto, patchAgendamento } from '../lib/db.js'
 import { SkeletonDetail } from '../components/Skeleton.jsx'
 import ErroCarga from '../components/ErroCarga.jsx'
+import { mensagemDeErro } from '../lib/erros.js'
+import { useConfirm } from '../components/ConfirmDialog.jsx'
 import { useToast } from '../components/Toast.jsx'
 import { useAuth } from '../auth/AuthContext.jsx'
 
@@ -14,6 +16,7 @@ export default function AtendimentoForm() {
   const { id, atId } = useParams()
   const navigate = useNavigate()
   const toast = useToast()
+  const confirmar = useConfirm()
   const { isAdmin } = useAuth()
   const [params] = useSearchParams()
   const editando = Boolean(atId)
@@ -75,16 +78,17 @@ export default function AtendimentoForm() {
         toast('Atendimento salvo')
         navigate(`/cliente/${id}`, { replace: true })
       }
-    } catch (err) { setErro(err.message); setBusy(false) }
+    } catch (err) { setErro(mensagemDeErro(err)); setBusy(false) }
   }
 
   const excluir = async () => {
-    if (!confirm('Excluir este atendimento?')) return
+    const ok = await confirmar({ titulo: 'Excluir este atendimento?', texto: 'Esta ação não pode ser desfeita.', ok: 'Excluir', perigo: true })
+    if (!ok) return
     try {
       for (const f of fotos) if (f.path) await removeFoto(f.path)
       await deleteAtendimento(atId)
       navigate(`/cliente/${id}`, { replace: true })
-    } catch (e) { alert('Erro: ' + e.message) }
+    } catch (e) { toast(mensagemDeErro(e), false) }
   }
 
   return (
@@ -121,9 +125,9 @@ export default function AtendimentoForm() {
             <PhotoCapture photos={fotos} onChange={setFotos} />
           </div>
 
-          {erro && <div className="error-text">{erro}</div>}
           {editando && isAdmin && <button className="btn danger" style={{ marginTop: 12 }} onClick={excluir}>Excluir atendimento</button>}
           <div className="actionbar">
+            {erro && <div className="error-text" role="alert">{erro}</div>}
             <div className="actionbar-inner">
               <button className="btn" disabled={busy} onClick={salvar}>{busy ? 'Salvando…' : 'Salvar atendimento'}</button>
             </div>

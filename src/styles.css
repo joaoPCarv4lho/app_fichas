@@ -123,6 +123,8 @@ a { color: var(--brand-strong); }
   padding: 12px 16px calc(var(--sab) + 12px);
   background: linear-gradient(to top, var(--bg) 62%, transparent);
 }
+.actionbar .error-text { max-width: 620px; margin: 0 auto 8px; }
+.content:has(.actionbar .error-text) { padding-bottom: calc(var(--sab) + 150px); } /* erro dentro da barra: sobra espaço */
 .actionbar-inner { max-width: 620px; margin: 0 auto; display: flex; gap: 10px; }
 .actionbar .btn { box-shadow: var(--sh-3); }
 

@@ -4,6 +4,7 @@ import TopBar from '../components/TopBar.jsx'
 import { useToast } from '../components/Toast.jsx'
 import { SkeletonDetail } from '../components/Skeleton.jsx'
 import ErroCarga from '../components/ErroCarga.jsx'
+import { mensagemDeErro } from '../lib/erros.js'
 import {
   listClientes, listAgendamentos, getAgendamento, saveAgendamento,
 } from '../lib/db.js'
@@ -40,7 +41,16 @@ export default function AgendamentoForm() {
   const [erroCarga, setErroCarga] = useState(null)
   const [tentativa, setTentativa] = useState(0)
 
-  useEffect(() => { listClientes().then(setClientes).catch(() => {}) }, [])
+  const [erroClientes, setErroClientes] = useState(false)
+  const [erroConflito, setErroConflito] = useState(false)
+  const [tentaClientes, setTentaClientes] = useState(0)
+
+  useEffect(() => {
+    let ativo = true
+    setErroClientes(false)
+    listClientes().then((l) => ativo && setClientes(l)).catch((e) => { console.error(e); if (ativo) setErroClientes(true) })
+    return () => { ativo = false }
+  }, [tentaClientes])
 
   useEffect(() => {
     if (!editando) return
@@ -62,9 +72,14 @@ export default function AgendamentoForm() {
 
   // carrega outros agendamentos do dia para checar conflito
   useEffect(() => {
-    if (!data) return
-    listAgendamentos({ dia: data }).then((l) => setDoDia(l.filter((x) => x.id !== id))).catch(() => {})
-  }, [data, id])
+    if (!data || !carregado) return // na edição, só depois de carregar (senão consulta o dia de hoje)
+    let ativo = true
+    setErroConflito(false)
+    listAgendamentos({ dia: data })
+      .then((l) => ativo && setDoDia(l.filter((x) => x.id !== id)))
+      .catch((e) => { console.error(e); if (ativo) { setDoDia([]); setErroConflito(true) } })
+    return () => { ativo = false }
+  }, [data, id, carregado])
 
   const conflito = useMemo(() => {
     const atual = { data, hora: hora + ':00', duracao_min: duracao }
@@ -94,7 +109,7 @@ export default function AgendamentoForm() {
       })
       toast(editando ? 'Agendamento atualizado' : 'Agendamento criado')
       navigate(-1)
-    } catch (e) { setErro(e.message); setBusy(false) }
+    } catch (e) { setErro(mensagemDeErro(e)); setBusy(false) }
   }
 
   return (
@@ -118,7 +133,8 @@ export default function AgendamentoForm() {
                   <option value="">Selecione…</option>
                   {clientes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
                 </select>
-                {clientes.length === 0 && <div className="hint">Nenhuma cliente cadastrada ainda — use "Avulsa" ou cadastre em Clientes.</div>}
+                {erroClientes && <div className="hint">Não foi possível carregar a lista de clientes. <button type="button" className="btn ghost sm" onClick={() => setTentaClientes((n) => n + 1)}>Tentar de novo</button></div>}
+                {!erroClientes && clientes.length === 0 && <div className="hint">Nenhuma cliente cadastrada ainda — use "Avulsa" ou cadastre em Clientes.</div>}
               </div>
             ) : (
               <>
@@ -185,6 +201,7 @@ export default function AgendamentoForm() {
                 <button type="button" onClick={() => setDur(Number(duracao) + 5)} aria-label="Aumentar 5 min">+</button>
               </div>
             </div>
+            {erroConflito && <div className="hint" style={{ marginTop: 14 }}>Não foi possível verificar conflitos de horário.</div>}
             {conflito && <div className="notice" style={{ marginTop: 14 }}>⚠️ Já existe outro horário nesse intervalo. Você pode salvar mesmo assim.</div>}
           </div>
 
@@ -195,8 +212,8 @@ export default function AgendamentoForm() {
               placeholder="Anotações do agendamento — produtos, preferências, alertas…" />
           </div>
 
-          {erro && <div className="error-text">{erro}</div>}
           <div className="actionbar">
+            {erro && <div className="error-text" role="alert">{erro}</div>}
             <div className="actionbar-inner">
               <button className="btn" disabled={busy} onClick={salvar}>{busy ? 'Salvando…' : 'Salvar'}</button>
             </div>

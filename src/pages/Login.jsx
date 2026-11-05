@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase.js'
+import { mensagemDeErro } from '../lib/erros.js'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -14,7 +15,7 @@ export default function Login() {
       const { error } = await supabase.auth.signInWithPassword({ email, password: senha })
       if (error) throw error
     } catch (err) {
-      setErro(traduz(err.message))
+      setErro(traduz(err.message) || mensagemDeErro(err))
     } finally {
       setBusy(false)
     }
@@ -46,8 +47,8 @@ export default function Login() {
   )
 }
 
-function traduz(m = '') {
+function traduz(m = '') { // null = não reconhecido (cai em mensagemDeErro)
   if (/Invalid login/i.test(m)) return 'E-mail ou senha incorretos.'
   if (/Email not confirmed/i.test(m)) return 'E-mail ainda não confirmado.'
-  return m
+  return null
 }

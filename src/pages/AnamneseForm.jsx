@@ -8,6 +8,7 @@ import { getCliente, getAnamnese, saveAnamnese } from '../lib/db.js'
 import { useToast } from '../components/Toast.jsx'
 import { SkeletonDetail } from '../components/Skeleton.jsx'
 import ErroCarga from '../components/ErroCarga.jsx'
+import { mensagemDeErro } from '../lib/erros.js'
 
 export default function AnamneseForm() {
   const { id, tipo } = useParams()
@@ -49,7 +50,7 @@ export default function AnamneseForm() {
   const termo = cliente ? TERMO_CONSENTIMENTO.replace('{NOME}', cliente.nome) : TERMO_CONSENTIMENTO
 
   const salvar = async () => {
-    if (!assinatura) { setErro('A cliente precisa assinar o termo de consentimento.'); window.scrollTo(0, document.body.scrollHeight); return }
+    if (!assinatura) { setErro('A cliente precisa assinar o termo de consentimento.'); return }
     setBusy(true); setErro('')
     try {
       await saveAnamnese({
@@ -63,7 +64,7 @@ export default function AnamneseForm() {
       })
       toast('Ficha salva')
       navigate(`/cliente/${id}`, { replace: true })
-    } catch (err) { setErro(err.message); setBusy(false) }
+    } catch (err) { setErro(mensagemDeErro(err)); setBusy(false) }
   }
 
   return (
@@ -84,8 +85,8 @@ export default function AnamneseForm() {
           <SignaturePad value={assinatura} onChange={setAssinatura} />
         </div>
 
-        {erro && <div className="error-text">{erro}</div>}
         <div className="actionbar">
+          {erro && <div className="error-text" role="alert">{erro}</div>}
           <div className="actionbar-inner">
             <button className="btn" disabled={busy} onClick={salvar}>{busy ? 'Salvando…' : 'Salvar ficha'}</button>
           </div>
