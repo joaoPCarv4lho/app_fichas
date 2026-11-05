@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../auth/AuthContext.jsx'
 
 export default function PinLock() {
-  const { verifyPin, signOut } = useAuth()
+  const { verifyPin, removePin, signOut } = useAuth()
   const [pin, setPin] = useState('')
   const [erro, setErro] = useState(false)
 
@@ -15,6 +15,8 @@ export default function PinLock() {
       if (!ok) { setErro(true); setTimeout(() => setPin(''), 400) }
     }
   }
+  // remove o PIN antes de sair: removePin limpa o localStorage e destrava o estado
+  const esqueci = async () => { removePin(); await signOut() }
   const back = () => setPin(pin.slice(0, -1))
 
   return (
@@ -30,10 +32,13 @@ export default function PinLock() {
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
             <button key={n} onClick={() => press(String(n))}>{n}</button>
           ))}
-          <button className="blank" onClick={signOut} style={{ fontSize: 13 }}>Sair</button>
+          <button className="blank" onClick={esqueci} style={{ fontSize: 13 }}>Esqueci o PIN</button>
           <button onClick={() => press('0')}>0</button>
           <button onClick={back}>⌫</button>
         </div>
+        <p className="muted" style={{ fontSize: 12, marginBottom: 0 }}>
+          Você vai sair e entrar de novo com e-mail e senha; o PIN será removido.
+        </p>
       </div>
     </div>
   )

@@ -4,7 +4,9 @@ import InstallCard from '../components/InstallCard.jsx'
 import { useAuth } from '../auth/AuthContext.jsx'
 
 export default function Configuracoes() {
-  const { hasPin, setupPin, removePin, signOut, session, isAdmin } = useAuth()
+  const { hasPin, setupPin, verifyPin, removePin, signOut, session, isAdmin } = useAuth()
+  const [removendo, setRemovendo] = useState(false)
+  const [pinAtual, setPinAtual] = useState('')
   const [pin, setPin] = useState('')
   const [pin2, setPin2] = useState('')
   const [msg, setMsg] = useState('')
@@ -16,6 +18,13 @@ export default function Configuracoes() {
     if (pin !== pin2) { setErro('Os PINs não conferem.'); return }
     await setupPin(pin)
     setPin(''); setPin2(''); setMsg('PIN salvo! Ele será pedido ao abrir o app.')
+  }
+
+  const confirmarRemocao = async () => {
+    setErro(''); setMsg('')
+    if (!(await verifyPin(pinAtual))) { setErro('PIN incorreto.'); return }
+    removePin()
+    setRemovendo(false); setPinAtual(''); setMsg('PIN removido.')
   }
 
   return (
@@ -39,7 +48,17 @@ export default function Configuracoes() {
             Um PIN de 4 dígitos é pedido toda vez que o app abre, protegendo as fichas caso alguém pegue seu aparelho.
           </p>
           {hasPin ? (
-            <button className="btn ghost" onClick={() => { removePin(); setMsg('PIN removido.') }}>Remover PIN</button>
+            removendo ? (
+              <>
+                <div className="field">
+                  <label>PIN atual</label>
+                  <input type="password" inputMode="numeric" maxLength={4} value={pinAtual} onChange={(e) => setPinAtual(e.target.value.replace(/\D/g, ''))} />
+                </div>
+                <button className="btn" onClick={confirmarRemocao}>Confirmar</button>
+              </>
+            ) : (
+              <button className="btn ghost" onClick={() => { setRemovendo(true); setErro(''); setMsg('') }}>Remover PIN</button>
+            )
           ) : (
             <>
               <div className="field">
