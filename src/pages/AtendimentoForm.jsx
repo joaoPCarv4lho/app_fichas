@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import TopBar from '../components/TopBar.jsx'
 import PhotoCapture from '../components/PhotoCapture.jsx'
@@ -20,6 +20,10 @@ export default function AtendimentoForm() {
   const { isAdmin } = useAuth()
   const [params] = useSearchParams()
   const editando = Boolean(atId)
+  // id gerado no cliente: se um passo depois do insert falhar, tocar Salvar de novo vira update (não duplica)
+  const [novoId] = useState(() => crypto.randomUUID())
+  // fotos já enviadas nesta tela (key -> {path,momento}): o retry não sobe a mesma foto de novo
+  const enviadas = useRef(new Map())
 
   const [tipo, setTipo] = useState(params.get('tipo') === 'manicure' ? 'manicure' : 'pele')
   const [data, setData] = useState(hojeISO())
@@ -59,10 +63,13 @@ export default function AtendimentoForm() {
       const fotosFinais = []
       for (const f of fotos) {
         if (f.path) fotosFinais.push({ path: f.path, momento: f.momento })
-        else if (f.blob) fotosFinais.push(await uploadFoto(f.blob, f.momento))
+        else if (f.blob) {
+          if (!enviadas.current.has(f.key)) enviadas.current.set(f.key, await uploadFoto(f.blob, f.momento))
+          fotosFinais.push(enviadas.current.get(f.key))
+        }
       }
       const saved = await saveAtendimento({
-        id: editando ? atId : undefined,
+        id: editando ? atId : novoId,
         cliente_id: id, tipo, data,
         servico: servico.trim(),
         observacoes: obs.trim(),
