@@ -31,11 +31,11 @@ Linhas numeradas seguem o catálogo do toolkit (`docs/tools/README.md`). "Escopo
 | # | Componente | Ação e motivo | Escopo | Estado | Evidência |
 |---|---|---|---|---|---|
 | 01 | Superpowers | Reaproveitado; skills disparadas no fluxo SDD deste setup | usuário | reaproveitado | Plugin ativo no baseline (spec); uso nesta execução não rastreado aqui |
-| 02 | Subagentes | Política curta em `AGENTS.md`, seção Delegação | projeto | configurado sem execução | `AGENTS.md` (77 linhas); política registrada; aderência não auditada |
+| 02 | Subagentes | Política curta em `AGENTS.md`, seção Delegação | projeto | configurado sem execução | `AGENTS.md`, seção Delegação; política registrada; aderência não auditada |
 | 03 | RTK | Bloqueado: instalação e hook são globais (ver seção 4) | máquina | bloqueado | `command -v rtk`: ausente |
 | 04 | Ponytail | Reaproveitado; modo `full` registrado em `AGENTS.md` | usuário | reaproveitado | Plugin ativo (baseline); modo `full` ativo nas sessões deste setup |
 | 05 | Caveman | Reaproveitado; conversa concisa, docs normais | usuário | reaproveitado | Plugin ativo (baseline); regra em `AGENTS.md` |
-| 06 | ESLint | Adaptado a JS/React; gate de 350 linhas; self-check das regras; `warn` onde há violação legada | projeto | validado | `npm run check` exit 0: lint 0 erros / 48 avisos (42 `no-unused-vars` + 6 `exhaustive-deps`), `verify:rules` 3x ok, build ok (Task 3 e 5) |
+| 06 | ESLint | Adaptado a JS/React; gate de 350 linhas; self-check das regras; `warn` onde há violação existente | projeto | validado | `npm run check` exit 0: lint 0 erros / 7 avisos (1 `no-unused-vars` + 6 `exhaustive-deps`, após a regra inline `jsx-uses/mark-used`; antes 42 + 6, com 41 falsos positivos de JSX, ver `docs/quality.md`), `verify:rules` 3x ok, build ok (Task 3 e 5) |
 | 07 | Graphify | Bloqueado: precisa de `uv`, instalação global; ganho baixo (ver seção 4) | máquina | bloqueado | `command -v uv` e `command -v graphify`: ausentes |
 | 08 | Obsidian | Memória externa opcional; a memória nativa do Claude basta | usuário | inaplicável | Decisão da spec; sem vault no projeto |
 | 09 | Memória do Claude | Reaproveitada a memória nativa (seção 7) | usuário | reaproveitado | Pasta de memória do projeto contém `MEMORY.md` e `app-fichas-projeto.md` |
@@ -45,14 +45,14 @@ Linhas numeradas seguem o catálogo do toolkit (`docs/tools/README.md`). "Escopo
 | 13 | Skills da Anthropic | Artefatos e criação de skills; fora do escopo do app | usuário | inaplicável | Sem necessidade de artefatos ou skills próprias no projeto |
 | 14 | Chrome DevTools MCP | Não instalar: browser embutido do cliente e agent-browser cobrem a necessidade | usuário | inaplicável | Decisão da spec; sem instalação |
 | 15 | Codex | Cliente não usado | usuário | inaplicável | Skills instaladas só com `--agent claude-code` |
-| 16 | Skills Vercel | Instaladas as de React/web; plugin Vercel não duplica nome | projeto | configurado sem execução | `.claude/skills/` com 3 skills Vercel + `skills-lock.json`; descoberta pelo cliente em nova sessão não observada |
+| 16 | Skills Vercel | Instaladas as de React/web; sobreposição parcial com a skill `react-best-practices` do plugin Vercel (ver abaixo), mantidas as duas | projeto | configurado sem execução | `.claude/skills/` com 3 skills Vercel + `skills-lock.json`; descoberta pelo cliente em nova sessão não observada |
 | 17 | Next dev-loop, Next bundle | App é Vite, não Next | projeto | inaplicável | `package.json`: Vite 5.4.21, sem `next` |
 | 18 | PostgreSQL | Skill local `supabase-postgres-best-practices` 1.1.1 + revisão estática dos 4 `supabase/*.sql` | projeto | validado (estático) | Relatório privado: 0 critical, 0 high, 1 medium, 6 low, 3 endurecimentos. Nada executado em banco |
 | 19 | gh-fix-ci | Sem CI para consertar | projeto | inaplicável | `ls .github`: não existe; sem remoto |
-| 20 | Revisão de segurança | Prompt reutilizável + revisão base em modo repositório | projeto | validado (estático) | `docs/prompts/security-review.md` (74 linhas); relatório privado: 0 critical, 0 high, 3 medium, 6 low |
+| 20 | Revisão de segurança | Prompt reutilizável + revisão base em modo repositório | projeto | validado (estático) | `docs/prompts/security-review.md`; relatório privado: 0 critical, 0 high, 3 medium, 6 low |
 | 21 | shadcn/ui | Não adotado no projeto | projeto | inaplicável | Sem `components.json`; UI própria em `src/styles.css` |
 | 22 | Sentry MCP | Sem serviço Sentry escolhido | projeto | inaplicável | Sem monitoramento no projeto |
-| 23 | Harness2 | Adaptação nativa (prompt 15) + smoke cases | projeto | validado (parcial) | `docs/quality.md`: 4 PASS, 4 não rodados (seção 7) |
+| 23 | Harness2 | Adaptação nativa (prompt 15) + smoke cases | projeto | validado (parcial) | 4 PASS, 4 não rodados (seção 7) |
 
 ### Prompts, templates e extras
 
@@ -65,7 +65,7 @@ Linhas numeradas seguem o catálogo do toolkit (`docs/tools/README.md`). "Escopo
 | Prompt 15 (Harness2) | Registrado origem e invocação em `docs/quality.md`; não copiado (o prompt não exige) | configurado sem execução | `docs/quality.md`, seção Harness2 |
 | Templates de `AGENTS.md` e `CLAUDE.md` | Adaptados; `CLAUDE.md` importa `@AGENTS.md` | validado | Arquivos presentes; subagente de descoberta achou `CLAUDE.md` -> `AGENTS.md` |
 | Regras ESLint do toolkit (`eslint-rules/`) | Copiadas; `utils`, `core-rules`, `index.cjs` e `verify.mjs` idênticos ao toolkit | validado | `cmp` sem diferença (Task 3); `verify:rules` ok |
-| `.gitattributes` | `.claude/skills/** -text` para não alterar hash das skills em CRLF | validado | Arquivo presente |
+| `.gitattributes` | `.claude/skills/** -text` para não converter fins de linha das skills | validado (parcial) | Regra presente, mas 36 de 128 arquivos estavam com CRLF no disco (`git ls-files --eol`: `i/lf w/crlf`). Normalizados para LF: agora 128 `i/lf w/lf`, `git status` limpo. Verificação do `computedHash` do `skills-lock.json` **não foi feita** (algoritmo não conferido) |
 | `.mcp.json` | Cópia exata do template, sem segredo | validado | `grep` de `api_key`/`token`/`secret`: sem match |
 | aia-harness (plugin) | Não instalar mais nada: já ativo no cliente; `init`/`patch` reescreveriam o harness que este setup acabou de ajustar | reaproveitado (sem uso) | Plugin listado como ativo no baseline; nenhum comando `aia-harness:*` executado |
 | ui-ux-pro-max | Não instalar: `web-design-guidelines` e o `frontend-design` ativo cobrem UI/UX; evitar skills sobrepostas | inaplicável | Decisão; nada instalado |
@@ -77,6 +77,8 @@ Linhas numeradas seguem o catálogo do toolkit (`docs/tools/README.md`). "Escopo
 | code-review (plugin) | Não instalar: revisão independente por risco já definida em `docs/quality.md`; há skill de revisão ativa no cliente | inaplicável | Decisão; nada instalado |
 | claude-md-management | Não instalar: `AGENTS.md` curto e revisado à mão; `CLAUDE.md` é só importação | inaplicável | `CLAUDE.md` contém `@AGENTS.md` |
 | `find-skills` | Instalada, só para procurar capacidade faltante sob demanda | configurado sem execução | `.claude/skills/find-skills`, hash no lock |
+
+Sobreposição com o plugin Vercel (0.50.0), comparando os dois `SKILL.md`: (1) plugin `react-best-practices`: revisor condensado de arquivos TSX, disparado após editar vários componentes (checklist de estrutura, hooks, acessibilidade, desempenho, TypeScript); (2) projeto `vercel-react-best-practices` 1.0.0: guia de desempenho React/Next.js da Vercel com 70 regras em 8 categorias, usado ao escrever ou revisar código; (3) nomes diferentes e escopos diferentes (o do plugin mira TSX/checklist, o do projeto mira desempenho e inclui regras de Next.js que não se aplicam). Há sobreposição parcial de gatilho em componentes `.jsx`, sem conflito de nome. Decisão: manter as duas; reavaliar se o cliente passar a disparar ambas redundantemente (descoberta efetiva não observada).
 
 Skills instaladas (escopo projeto, `skills-lock.json` versão 1, guarda hash e não SHA de commit): `find-skills` (vercel-labs/skills), `supabase-postgres-best-practices` 1.1.1 (supabase/agent-skills), `vercel-react-best-practices` 1.0.0, `vercel-composition-patterns` 1.0.0, `web-design-guidelines` 1.0.0 (vercel-labs/agent-skills). Scan de segurança do CLI: Safe, 0 alertas para as 3 de `agent-skills`. Não instaladas por inaplicabilidade: `next-dev-loop`, `next-bundle-optimizer`, `vercel-react-view-transitions`, `vercel-optimize`, `deploy-to-vercel`, `vercel-cli-with-tokens`, `writing-guidelines`, `react-native-skills`.
 
@@ -119,12 +121,12 @@ Nove destinos do manifesto do toolkit (`templates/project-docs/manifest.json`), 
 |---|---|---|
 | README | `README.md` | Existente, **preservado**; ajustado só em SQLs extras, agenda, publicação e seção Documentação |
 | Produto | `PRODUCT.md` | Criado |
-| Instruções do agente | `AGENTS.md` | Criado (77 linhas) |
+| Instruções do agente | `AGENTS.md` | Criado |
 | Ponte do Claude | `CLAUDE.md` | Criado, importa `@AGENTS.md` |
 | Arquitetura | `docs/architecture.md` | Criado |
 | Design | `docs/design.md` | Criado |
 | Onboarding | `docs/onboarding.md` | Criado |
-| Qualidade | `docs/quality.md` | Criado (86 linhas) |
+| Qualidade | `docs/quality.md` | Criado |
 | Setup | `docs/setup.md` | Este arquivo |
 
 Extra: `docs/prompts/security-review.md`. Specs e planos ficam em `docs/superpowers/`.
@@ -136,16 +138,16 @@ Linha de base (antes do setup) vs. final. Ambos medidos com os comandos indicado
 | Check | Antes | Depois | Observação |
 |---|---|---|---|
 | `npm run build` | passa (Vite 5.4.21, PWA 16 entradas, aviso de chunk >500 kB) | passa (parte de `npm run check`, exit 0) | O aviso de chunk grande é anterior ao setup |
-| `npm run lint` | não existia | 0 erros, 48 avisos | 42 `no-unused-vars` + 6 `exhaustive-deps`, todos legados |
+| `npm run lint` | não existia | 0 erros, 7 avisos | 1 `no-unused-vars` + 6 `exhaustive-deps` (42 + 6 antes da regra inline de JSX; ver `docs/quality.md`) |
 | `npm run verify:rules` | não existia | 3 regras `ok` | `max-lines`, `no-direct-console`, `no-direct-data-access` |
 | `npm run check` | não existia | passa | lint + verify:rules + build |
-| `npm audit` | 15 (3 low, 8 moderate, 3 high, 1 critical) | 15, mesma composição | Sem mudança |
-| `npm audit --omit=dev` | 4 (2 moderate, 1 high, 1 critical) | 4, mesma composição | Sem mudança |
 
-- **Falhas anteriores ao setup (não são regressão):** as 15 vulnerabilidades (4 em produção) e o aviso de chunk. As devDependencies de lint não as introduziram nem as corrigiram.
+Números de `npm audit` (15 no total, 4 em produção, antes e depois, sem mudança): ver `docs/quality.md`, seção Dependências.
+
+- **Falhas anteriores ao setup (não são regressão):** as vulnerabilidades do `npm audit` e o aviso de chunk. As devDependencies de lint não as introduziram nem as corrigiram.
 - **Regressões introduzidas:** nenhuma observada. Nenhum arquivo de `src/` nem SQL foi alterado.
-- **Vulnerabilidades: não corrigidas.** O "critical" é `jspdf` 2.5.2, classificado como **teórico** pela revisão de segurança (o app não usa `doc.html()`; `addImage` recebe só dado da própria usuária). Produção: `jspdf` e `react-router-dom` 6.30.6. Só no build: `serialize-javascript`, `source-map-js`. Correção exige majors (jsPDF 4, react-router 7) ou `npm audit fix`; ambas ficam para tarefa própria. `npm audit` não foi re-executado na Task 4 por enviar o manifesto ao registro; a Task 5 o rodou e confirmou os números.
-- **Ressalva:** npm avisou que scripts de instalação de `core-js`/`esbuild` estão bloqueados (comportamento anterior ao setup); o build funciona.
+- **Vulnerabilidades: não corrigidas.** O "critical" é `jspdf` 2.5.2, classificado como teórico pela revisão de segurança. Detalhes e plano: `docs/quality.md`.
+- **Ressalva:** npm avisou que scripts de instalação de `core-js`/`esbuild` estão bloqueados; não se confirmou se isso é anterior ao setup (sem baseline desse aviso). O build funciona.
 
 ## 7. Memória e harness
 
@@ -205,7 +207,8 @@ Próxima ação proposta para cada um (todas dependem de o usuário aprovar esco
 2. **Medium, fotos de saúde ficam no Storage** após excluir cliente ou foto: tarefa própria para apagar objetos junto da exclusão e limpar órfãos (impacto LGPD; mexe em `db.js` e telas).
 3. **Medium, re-salvar a anamnese regrava termo atual com assinatura antiga:** tarefa própria para atualizar consentimento só quando a assinatura mudar.
 4. **Low (PostgreSQL e segurança):** referência cross-tenant de `cliente_id`, índices em FKs, `auth.uid()` sem `(select ...)`, checks de integridade, PIN sem limite de tentativas, `jspdf` e `react-router` teóricos, `serialize-javascript`/`source-map-js` só no build. Agrupar por tema e priorizar com o usuário.
-5. **Hipóteses abertas, só o usuário confirma no painel:** cadastro público do Supabase Auth ligado ou não; estado real de `pg_policies`; validade do JWT e política de senha.
+5. **Propostas confirmadas pelo revisor da Task 4 (só propostas, nada alterado):** `src/pages/AtendimentoForm.jsx:69-71` remove as fotos do Storage **antes** de apagar o atendimento no banco, então as fotos se perdem se a exclusão falhar (inverter a ordem ou tratar falha); `src/pages/Configuracoes.jsx:42` remove o PIN sem pedir o PIN atual (exigir confirmação).
+6. **Hipóteses abertas, só o usuário confirma no painel:** cadastro público do Supabase Auth ligado ou não; estado real de `pg_policies`; validade do JWT e política de senha.
 
 ### 9.2 Instalações globais pendentes (precisam de autorização)
 

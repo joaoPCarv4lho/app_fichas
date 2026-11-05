@@ -76,7 +76,7 @@ termo de consentimento** também está lá (`TERMO_CONSENTIMENTO`).
 
 ## Segurança e LGPD
 - Cada conta só enxerga os próprios dados (regras de segurança no banco).
-- Apenas o papel `admin` exclui clientes e atendimentos.
+- Apenas o papel `admin` exclui clientes e atendimentos, desde que `supabase/roles.sql` tenha sido aplicado por último (reexecutar `schema.sql` recria políticas permissivas; reaplique `roles.sql` depois).
 - Dado sensível de saúde exige consentimento — por isso o termo + assinatura são
   obrigatórios para salvar uma anamnese.
 - O texto de consentimento é um modelo; ajuste com orientação jurídica.

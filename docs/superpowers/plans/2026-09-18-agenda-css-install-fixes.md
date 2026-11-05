@@ -29,7 +29,7 @@ O projeto não é um repositório git. Antes de editar qualquer arquivo, criar u
 
 **Interfaces:**
 - Consumes: nada.
-- Produces: um repositório git local inicializado na raiz `C:\Users\joaod\app_fichas`, com um commit inicial contendo o estado atual do projeto. As tarefas seguintes (Task 1, Task 2) dependem de este commit existir para poderem fazer `git add`/`git commit` dos seus próprios diffs.
+- Produces: um repositório git local inicializado na raiz `<raiz do projeto>`, com um commit inicial contendo o estado atual do projeto. As tarefas seguintes (Task 1, Task 2) dependem de este commit existir para poderem fazer `git add`/`git commit` dos seus próprios diffs.
 
 - [ ] **Step 1: Confirmar que ainda não é um repo git**
 
@@ -41,7 +41,7 @@ Se o comando retornar um status git normal (ou seja, já virou repositório entr
 - [ ] **Step 2: Inicializar o repositório**
 
 Run: `git init`
-Expected: `Initialized empty Git repository in C:/Users/joaod/app_fichas/.git/`
+Expected: `Initialized empty Git repository in <raiz do projeto>/.git/`
 
 - [ ] **Step 3: Confirmar que o `.gitignore` já existe e cobre o essencial**
 

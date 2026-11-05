@@ -10,9 +10,9 @@
 
 **Spec:** `docs/superpowers/specs/2026-11-05-toolkit-setup-design.md`
 
-**Toolkit (somente leitura, fora do projeto):** `C:\Users\joaod\AppData\Local\Temp\claude\140954f0fa45357a\42c23978-9c9f-408e-b113-df2905f226a5\scratchpad\toolkit` (revisão `21b71b68679c11184f49c23168852014bf6dde8b`, 2026-10-29). Abreviado como `$TK` abaixo. Usar guias e templates só dessa cópia.
+**Toolkit (somente leitura, fora do projeto):** `<scratchpad>\toolkit` (revisão `21b71b68679c11184f49c23168852014bf6dde8b`, 2026-10-29). Abreviado como `$TK` abaixo. Usar guias e templates só dessa cópia.
 
-**Memória do projeto (fatos de produto):** `C:\Users\joaod\.claude\projects\C--Users-joaod-app-fichas\memory\app-fichas-projeto.md`. Conferir cada fato contra o código antes de copiar para um doc.
+**Memória do projeto (fatos de produto):** `<memória do projeto>\app-fichas-projeto.md`. Conferir cada fato contra o código antes de copiar para um doc.
 
 ## Global Constraints
 
@@ -37,7 +37,7 @@
 | `.mcp.json`, `.gitignore`, skills de projeto (`.claude/skills/*` ou caminho que o guia 16 definir) | criar/ajustar | 2 |
 | `eslint.config.mjs`, `eslint-rules/*.cjs`, `scripts/verify-quality-rules.mjs`, `package.json`, `package-lock.json` | criar/ajustar | 3 |
 | `docs/prompts/security-review.md` | criar | 4 |
-| Relatórios PostgreSQL e segurança | criar **fora** do repo em `C:\Users\joaod\app_fichas-private\reviews\` | 4 |
+| Relatórios PostgreSQL e segurança | criar **fora** do repo em `..\app_fichas-private\reviews\` | 4 |
 | `docs/quality.md` | criar | 5 |
 | `docs/setup.md` | criar | 6 |
 
@@ -45,7 +45,7 @@
 
 ## Task 0: Baseline antes de editar
 
-**Files:** nenhum arquivo do projeto alterado. Saída em `C:\Users\joaod\AppData\Local\Temp\claude\140954f0fa45357a\42c23978-9c9f-408e-b113-df2905f226a5\scratchpad\baseline.txt`.
+**Files:** nenhum arquivo do projeto alterado. Saída em `<scratchpad>\baseline.txt`.
 
 **Produz:** `baseline.txt` com resultados "antes", lido pelas Tarefas 5 e 6.
 
@@ -58,7 +58,7 @@ Expected: saída de `status` vazia; topo `c279fd8 docs: spec de adocao do vibe c
 
 Run:
 ```bash
-B="C:/Users/joaod/AppData/Local/Temp/claude/140954f0fa45357a/42c23978-9c9f-408e-b113-df2905f226a5/scratchpad/baseline.txt"
+B="<scratchpad>/baseline.txt"
 { echo "## versoes"; node -v; npm -v; echo "## build"; npm run build 2>&1 | tail -15; echo "## outdated (somente leitura)"; npm outdated 2>&1 | head -30; echo "## audit completo"; npm audit 2>&1 | tail -20; echo "## audit producao"; npm audit --omit=dev 2>&1 | tail -20; echo "## linhas por arquivo (top 8)"; find src -type f | xargs wc -l | sort -n | tail -9; echo "## console em src"; grep -rn "console\." src | head -20; echo "## imports diretos do supabase em paginas"; grep -rln "lib/supabase" src/pages src/components | head; } > "$B" 2>&1; head -c 4000 "$B"
 ```
 Expected: build termina com `built in`. `npm audit` e `outdated` registram o que houver, sem corrigir.
@@ -290,14 +290,14 @@ Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"
 
 **Files:**
 - Create: `docs/prompts/security-review.md`
-- Create (fora do repo): `C:\Users\joaod\app_fichas-private\reviews\postgres-2026-11-05.md`, `C:\Users\joaod\app_fichas-private\reviews\security-baseline-2026-11-05.md`
+- Create (fora do repo): `..\app_fichas-private\reviews\postgres-2026-11-05.md`, `..\app_fichas-private\reviews\security-baseline-2026-11-05.md`
 
 **Consome:** skill `supabase-postgres-best-practices` (Tarefa 2), `$TK/docs/prompts/13-security-review.md`, `$TK/templates/security-review.md.template`, `$TK/docs/tools/20-security-review.md`.
 **Produz:** contagem de achados por severidade e caminho dos relatórios, para `docs/quality.md` e `docs/setup.md`.
 
 - [ ] **Passo 1: Prompt reutilizável de segurança**
 
-Copiar **somente** o bloco "Prompt" de `$TK/docs/prompts/13-security-review.md` para `docs/prompts/security-review.md`, adaptando caminhos (relatórios em `C:\Users\joaod\app_fichas-private\reviews\`), preservando limites (somente leitura por padrão, sem fixes automáticos, sem sondar produção, sem enviar código). Cabeçalho do arquivo: fonte `soumatheusgomes/vibe-coding-toolkit@21b71b6`, caminho de origem e como atualizar. Traduzir o cabeçalho para pt-BR; manter o corpo do prompt no idioma original se a tradução arriscar mudar limites.
+Copiar **somente** o bloco "Prompt" de `$TK/docs/prompts/13-security-review.md` para `docs/prompts/security-review.md`, adaptando caminhos (relatórios em `..\app_fichas-private\reviews\`), preservando limites (somente leitura por padrão, sem fixes automáticos, sem sondar produção, sem enviar código). Cabeçalho do arquivo: fonte `soumatheusgomes/vibe-coding-toolkit@21b71b6`, caminho de origem e como atualizar. Traduzir o cabeçalho para pt-BR; manter o corpo do prompt no idioma original se a tradução arriscar mudar limites.
 
 - [ ] **Passo 2: Revisão PostgreSQL (somente leitura)**
 
@@ -309,7 +309,7 @@ Executar o prompt do Passo 1 como baseline do repositório. Pontos obrigatórios
 
 - [ ] **Passo 4: Verificar**
 
-Run: `ls -la "C:/Users/joaod/app_fichas-private/reviews/" && git status --short`
+Run: `ls -la "../app_fichas-private/reviews/" && git status --short`
 Expected: dois relatórios fora do repo; `git status` só mostra `docs/prompts/security-review.md`. Nenhum relatório dentro do repo. **Não corrigir** nenhum achado nesta tarefa: achados viram propostas no relatório e no resumo final.
 
 - [ ] **Passo 5: Commit**
@@ -342,7 +342,7 @@ Conteúdo obrigatório, tudo com evidência real:
 1. Comandos: `npm run lint` (ESLint 9; erros bloqueiam, avisos não), `npm run verify:rules` (self-check das regras locais), `npm run build`, `npm run check` (combina os três; não publica, não toca produção), `npm run check:db` (só com `.env` e rede; **não** faz parte de `check`). Testes: **indisponíveis — o projeto não tem framework de testes; não foi adicionado por falta de lógica pura testável e por escopo (YAGNI)**.
 2. Regras-base adotadas (as reais: 350 linhas, hooks do React, variáveis não usadas) e **tabela de adoção** com contagem por regra, escopo e plano de redução (dados da Tarefa 3).
 3. Estratégia de teste real: verificação manual na UI + banco isolado quando mexe em SQL (lição do bug de `user_id`); sem cobertura inventada.
-4. Capacidades adotadas e suas verificações: PostgreSQL (revisão somente leitura, resultado), segurança (revisão base, contagem por severidade, relatórios privados em `C:\Users\joaod\app_fichas-private\reviews\`, nunca versionar), agent-browser (resultado do Passo 4 da Tarefa 2), Context7 (estado real). Omitir com motivo as inaplicáveis (Next, shadcn, Sentry, gh-fix-ci).
+4. Capacidades adotadas e suas verificações: PostgreSQL (revisão somente leitura, resultado), segurança (revisão base, contagem por severidade, relatórios privados em `..\app_fichas-private\reviews\`, nunca versionar), agent-browser (resultado do Passo 4 da Tarefa 2), Context7 (estado real). Omitir com motivo as inaplicáveis (Next, shadcn, Sentry, gh-fix-ci).
 5. Harness2: método nativo adotado, prompt de origem (`docs/prompts/15-harness-improvement.md@21b71b6`), smoke cases com resultado. Sem comparação de candidatos (nenhuma falha observada).
 6. Seção "Revisão após implementação" (escopo por risco, intervalo exato, achados, cobertura) e "Revisão de segurança" apontando `docs/prompts/security-review.md`.
 7. Dependências: `npm audit` completo e de produção (números do baseline e depois do `npm i -D` da Tarefa 3), sem forçar correções incompatíveis.
@@ -389,7 +389,7 @@ Seções obrigatórias:
 4. **Bloqueados com condição de retomada:** RTK (comando e efeito global, autorização necessária), Graphify (precisa `uv`; comandos; ganho baixo em 2,4k linhas), instalação do browser do agent-browser se aplicável, carga real do Context7 (reiniciar cliente e confiar em `.mcp.json`).
 5. **Documentação criada:** mapa dos 9 destinos para arquivos reais, `README.md` preservado.
 6. **Checks antes/depois:** tabela com `build`, `lint`, `verify:rules`, `audit` (baseline vs. final); falhas anteriores ao setup separadas de regressões.
-7. **Memória e harness:** memória nativa do Claude (`C:\Users\joaod\.claude\projects\C--Users-joaod-app-fichas\memory\`, índice `MEMORY.md`, carregado pelo cliente), convenção de fonte/verificação, handoff só em `docs/superpowers/plans/` quando houver trabalho multi-sessão; resultado dos smoke cases.
+7. **Memória e harness:** memória nativa do Claude (`<memória do projeto>\`, índice `MEMORY.md`, carregado pelo cliente), convenção de fonte/verificação, handoff só em `docs/superpowers/plans/` quando houver trabalho multi-sessão; resultado dos smoke cases.
 8. **Como repetir e manter:** comandos para rodar checks, atualizar skills (revisar diff), repetir este setup preservando customizações (rodar prompt 12 de novo), lista de decisões a revisar com gatilho (Vite 6+, adoção de testes, remote/CI no GitHub, mais de 2 usuários). Sem agendamento automático.
 9. **Pendências e próxima entrega:** achados dos relatórios privados (contagem, local, próxima ação), instalações globais pendentes, próxima menor tarefa de produto não é inventada (omitir se não houver).
 
@@ -399,9 +399,9 @@ Run:
 ```bash
 wc -l docs/setup.md
 grep -niE "TODO|TBD|\[fill|\[component|\[check" docs/setup.md || echo "sem placeholders"
-grep -n "C:\\\\Users\\\\joaod" docs/*.md AGENTS.md README.md PRODUCT.md | head
+grep -nF "Users" docs/*.md AGENTS.md README.md PRODUCT.md | head
 ```
-Expected: ≤ 350 linhas, sem placeholders. Caminhos pessoais (`C:\Users\joaod`) em docs versionados só são aceitos onde o documento precisa apontar a memória/relatórios privados; trocar por descrição genérica ("pasta de memória do Claude para este projeto") nos demais.
+Expected: ≤ 350 linhas, sem placeholders. Caminhos pessoais absolutos em docs versionados só são aceitos onde o documento precisa apontar a memória/relatórios privados; trocar por descrição genérica ("pasta de memória do Claude para este projeto") nos demais.
 
 - [ ] **Passo 4: Commit**
 

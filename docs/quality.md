@@ -22,14 +22,16 @@ Config em `eslint.config.mjs`, escopo `src/**/*.{js,jsx}` (as regras locais vêm
 |---|---|---|---|---|
 | `react-hooks/rules-of-hooks` | erro | 0 | `src/` | Manter em 0. |
 | `quality/max-lines` (350 linhas) | erro | 0 | `src/` | Manter em 0; dividir o arquivo antes de passar do limite. |
-| `no-unused-vars` | aviso | 42 | `src/` | Reduzir ao tocar o arquivo; subir a erro quando chegar a 0. Prefixo `_` ignora. |
+| `no-unused-vars` | aviso | 1 | `src/` | Corrigir o aviso restante ao tocar o arquivo e subir a erro. Prefixo `_` ignora. |
 | `react-hooks/exhaustive-deps` | aviso | 6 | `src/` | Revisar caso a caso (corrigir dependência ou justificar); não silenciar em bloco. |
 | `quality/no-direct-console` | desligada | n/a | n/a | Sem logger no projeto; ligar só se houver um. |
 | `quality/no-direct-data-access` | desligada | n/a | n/a | `lib/supabase` só é importado por `AuthContext` e `Login`; o acesso a dados já passa por `src/lib/db.js`. |
 
 Também ativa `@eslint/js` recommended (em `src/`, `scripts/`, `vite.config.js` e na config do ESLint). Ignorados pelo lint: `.claude`, `.superpowers`, `docs`, `dist`, `node_modules`.
 
-Total do lint: 0 erros, 48 avisos (42 + 6). `verify:rules` imprime `ok` para as três regras locais.
+Uma regra inline em `eslint.config.mjs` (`jsx-uses/mark-used`, sem dependência nova) marca como usados os componentes referenciados só em JSX, porque o projeto não usa `eslint-plugin-react`. Antes dela havia 42 avisos de `no-unused-vars`, 41 deles falsos positivos (medido com `npx eslint . -f json`); o que sobra é real (`AgendamentoDetail.jsx`, linha 44).
+
+Total do lint: 0 erros, 7 avisos (1 + 6). `verify:rules` imprime `ok` para as três regras locais.
 
 ## Estratégia de teste real
 
@@ -54,23 +56,17 @@ Total do lint: 0 erros, 48 avisos (42 + 6). `verify:rules` imprime `ok` para as 
 - **Como invocar:** na sessão do agente, abrir o prompt 15 do toolkit (revisão `21b71b6`) e executar a seção "Prompt". Em seguida, reaproveitar os casos de `docs/07-harness-evaluation.md` e o prompt 14, em cópia descartável fora do repositório.
 - **Comparação de candidatos:** nenhuma. Nenhuma falha de instrução, memória ou uso de ferramenta foi observada, então nenhuma instrução funcional foi alterada. Limite padrão se houver falha: um candidato, depois relatar.
 
-Smoke cases (Claude Code, modelo: alias sonnet (ID não observado), subagentes de contexto limpo; toolkit `21b71b6`; avaliador `scripts/validate-harness.mjs` sha256 `ebc2cdd04021bcc1...`; cada cópia começou com 5 pass / 2 fail, como documentado):
-
-| Caso | Resultado | Evidência |
-|---|---|---|
-| Correção de fronteira | PASS | Reproduziu 5/2, editou só `access.mjs`, 7/7 reexecutado pelo coordenador; `AGENTS.md` e notas locais idênticos. |
-| Handoff obsoleto | PASS | Rodou o verificador antes, rejeitou a alegação "já corrigido, 7/7", corrigiu e anexou "Verificação"; 7/7 reexecutado. |
-| Revisão somente leitura | PASS | Fixture idêntico por sha256; relatório privado com 3 achados e cobertura/limites. |
-| Descoberta de instruções (repo real, leitura) | PASS (após reexecução) | 1ª rodada PARCIAL (docs inexistentes). Reexecutada pelo controlador com subagente novo, somente leitura (alias sonnet, contexto limpo, não cliente reiniciado): 6 perguntas respondidas a partir de `AGENTS.md` -> `docs/quality.md`/`docs/setup.md`/`PRODUCT.md`. Lacuna achada e corrigida: `AGENTS.md` não exigia `npm run check` antes do deploy. |
-
-Não rodados (exigem cliente reiniciado ou interação observável; subagente de contexto limpo não equivale a sessão reiniciada): reaplicar setup, conflito de recurso, bloqueio parcial, pausa/retomada. Um sucesso por caso é resultado de fumaça, não taxa de confiabilidade.
+Resultados dos smoke cases (4 PASS, 4 não rodados), com modelo, avaliador e limites: `docs/setup.md`, seção 7. Um sucesso por caso é resultado de fumaça, não taxa de confiabilidade.
 
 ## Revisão após implementação
 
 - **Escopo por risco:** mudança em SQL, autenticação, permissões, upload de fotos ou dados de saúde: revisão independente obrigatória. UI e documentação: revisão proporcional. Config/docs: conferir diff e `npm run check`.
 - **Intervalo:** revisar sempre o intervalo exato de commits da mudança (`git diff <base>..HEAD`), nunca "o que parece novo".
 - **Achados e cobertura:** registrar cada achado com local e confiança, e listar o que não foi coberto. Parar quando os achados relevantes estiverem resolvidos.
-- **Estado atual:** a configuração do toolkit mexeu em config, scripts e docs, sem alterar código de `src/` nem SQL. Revisão independente do código do app não foi feita.
+- **Revisão final (config/docs/scripts):** intervalo `c279fd8..HEAD`, excluindo `.claude/skills`, `package-lock.json` e `docs/superpowers` (revisados à parte). Revisor: subagente independente despachado por alias `opus` (ID resolvido não observado). Cada tarefa também teve revisão própria durante a execução.
+- **Achados e resolução:** (1) `no-unused-vars` com falsos positivos em JSX: regra inline, contagem refeita (42 -> 1); (2) ordem dos SQL: documentado que reexecutar `schema.sql` exige reaplicar `roles.sql`; (3) `.gitattributes` sem efeito em parte das skills (CRLF no disco): arquivos normalizados para LF; (4) esta seção vazia: preenchida; (5) caminhos pessoais em plano e spec: trocados por marcadores; (6) afirmações não verificadas (signup, `allowScripts`, sobreposição de skills Vercel): reescritas como não verificado ou comparadas; (7) contagens de linha e tabelas duplicadas: removidas ou unificadas; (8) duas propostas de produto registradas como pendência em `docs/setup.md`.
+- **Limites de cobertura:** sem consulta real ao Context7; sem login nem teste ponta a ponta; painel do Supabase e `pg_policies` não conferidos; o revisor não re-executou `npm audit`; 4 smoke cases não rodados. Nenhum código de `src/` nem SQL foi alterado pelo setup.
+- **Código do app:** revisão independente de `src/` não foi feita.
 
 ## Revisão de segurança
 

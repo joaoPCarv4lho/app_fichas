@@ -8,7 +8,7 @@ Uma profissional de estética (atuação solo) atende **limpeza de pele/dermapla
 
 - Uso em **celular e tablet**; o app é um **PWA instalável** (Android e iPhone).
 - A profissional **preenche** a ficha; a cliente apenas **assina** na tela (canvas).
-- Exatamente **dois logins**, sem cadastro público (o login é só e-mail + senha). Dados **separados por usuário** (RLS `auth.uid() = user_id`).
+- Configuração pretendida: **dois logins**, sem cadastro público (login só com e-mail + senha); o desligamento do signup não foi verificado no painel do Supabase. Dados **separados por usuário** (RLS `auth.uid() = user_id`).
 - Papel em `app_metadata.role`:
   - `admin`: acesso total, inclusive excluir clientes e atendimentos; só ele vê o card da conta em Configurações.
   - sem papel (profissional): cria e edita; **não** exclui cliente nem atendimento; **pode** excluir agendamento; em Configurações ("Segurança") vê só PIN, instalação e sair.
