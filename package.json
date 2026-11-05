@@ -11,7 +11,8 @@
     "check:db": "node scripts/check-db.mjs",
     "lint": "eslint .",
     "verify:rules": "node scripts/verify-quality-rules.mjs",
-    "check": "npm run lint && npm run verify:rules && npm run build"
+    "test": "node --test \"src/lib/*.test.js\"",
+    "check": "npm run lint && npm run verify:rules && npm run test && npm run build"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",

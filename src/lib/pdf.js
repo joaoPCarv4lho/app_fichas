@@ -1,4 +1,5 @@
 import { jsPDF } from 'jspdf'
+import { leResposta } from './resposta.js'
 
 // Gera e baixa um PDF da ficha de anamnese preenchida.
 export function gerarPdfAnamnese(cliente, anamnese, schema) {
@@ -72,10 +73,10 @@ export function gerarPdfAnamnese(cliente, anamnese, schema) {
 function formata(campo, valor) {
   if (valor == null || valor === '') return ''
   if (campo.tipo === 'sim_nao') {
-    const resp = valor?.resp ?? valor
+    const resp = leResposta(valor)
     if (!resp) return ''
     const base = resp === 'sim' ? 'Sim' : 'Não'
-    const det = valor?.detalhe
+    const det = campo.detalheSe && resp === campo.detalheSe ? valor?.detalhe : ''
     return det ? `${base} — ${det}` : base
   }
   if (campo.tipo === 'multi') return Array.isArray(valor) && valor.length ? valor.join(', ') : ''

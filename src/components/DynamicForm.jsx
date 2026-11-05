@@ -1,3 +1,5 @@
+import { leResposta } from '../lib/resposta.js'
+
 // Renderiza uma ficha a partir do schema (src/data/fichaSchemas.js).
 // value: objeto { [campoId]: resposta }. onChange(novoValue).
 
@@ -24,7 +26,7 @@ function Campo({ campo, value, onChange }) {
   const { tipo, label } = campo
 
   if (tipo === 'sim_nao') {
-    const resp = value?.resp ?? value // aceita formato antigo
+    const resp = leResposta(value) // aceita formato antigo
     const detalhe = value?.detalhe ?? ''
     const setResp = (r) => onChange(campo.detalheSe ? { resp: r, detalhe } : r)
     const showDetalhe = campo.detalheSe && resp === campo.detalheSe
