@@ -5,6 +5,7 @@ manicure (esmaltação em gel, alongamento, etc.). Feito para uso no **celular e
 tablet** (funciona como app instalável — PWA).
 
 ## O que ele faz
+- **Agenda** interna de agendamentos (dia e próximos).
 - Cadastro de **clientes** (com busca).
 - **Anamnese "viva"** por cliente, um formulário para cada serviço (pele e
   manicure), sempre editável.
@@ -29,6 +30,10 @@ npm install
 3. Copie **todo** o conteúdo de [`supabase/schema.sql`](supabase/schema.sql),
    cole e clique em **Run**. Isso cria as tabelas, a segurança (RLS) e o
    depósito de fotos.
+4. Repita com [`supabase/roles.sql`](supabase/roles.sql),
+   [`supabase/agenda.sql`](supabase/agenda.sql) e
+   [`supabase/agenda-link.sql`](supabase/agenda-link.sql), nessa ordem (papéis,
+   agenda e vínculo agendamento-atendimento).
 
 ### 3. Ligar o app ao Supabase
 1. No Supabase, vá em **Project Settings → API**.
@@ -43,11 +48,11 @@ npm install
 ```bash
 npm run dev
 ```
-Abra o endereço que aparecer (ex.: `http://localhost:5173`), **crie sua conta**
-(e-mail + senha) e comece a usar.
-
-> Dica: em **Authentication → Providers → Email**, você pode desligar
-> "Confirm email" para entrar direto sem confirmar o e-mail.
+Abra o endereço que aparecer (ex.: `http://localhost:5173`), entre com e-mail e
+senha. Não há cadastro público: crie os 2 usuários em **Authentication → Users**
+no Supabase e desabilite o signup. Para dar acesso total a um deles, defina
+`{"role":"admin"}` em *Raw App Meta Data* (detalhes em
+[`docs/onboarding.md`](docs/onboarding.md)).
 
 ---
 
@@ -70,9 +75,19 @@ termo de consentimento** também está lá (`TERMO_CONSENTIMENTO`).
 
 ## Segurança e LGPD
 - Cada conta só enxerga os próprios dados (regras de segurança no banco).
+- Apenas o papel `admin` exclui clientes e atendimentos.
 - Dado sensível de saúde exige consentimento — por isso o termo + assinatura são
   obrigatórios para salvar uma anamnese.
 - O texto de consentimento é um modelo; ajuste com orientação jurídica.
 
 ## Tecnologias
 React + Vite · Supabase (banco, login e fotos) · PWA · jsPDF.
+
+## Documentação
+- [`PRODUCT.md`](PRODUCT.md): produto, papéis e escopo.
+- [`docs/architecture.md`](docs/architecture.md): estrutura, dados e decisões.
+- [`docs/design.md`](docs/design.md): interface.
+- [`docs/onboarding.md`](docs/onboarding.md): preparar o ambiente.
+- [`docs/quality.md`](docs/quality.md): checagens de qualidade.
+- [`docs/setup.md`](docs/setup.md): ferramentas e harness de IA.
+- [`AGENTS.md`](AGENTS.md): instruções para agentes de IA.
