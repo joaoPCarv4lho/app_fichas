@@ -11,16 +11,16 @@ import './styles.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
+    <ErrorBoundary>
     <BrowserRouter>
       <AuthProvider>
         <ToastProvider>
           <ConfirmProvider>
-            <ErrorBoundary>
-              <App />
-            </ErrorBoundary>
+            <App />
           </ConfirmProvider>
         </ToastProvider>
       </AuthProvider>
     </BrowserRouter>
+    </ErrorBoundary>
   </React.StrictMode>
 )
