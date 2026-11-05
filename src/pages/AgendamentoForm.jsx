@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import TopBar from '../components/TopBar.jsx'
 import { useToast } from '../components/Toast.jsx'
 import { SkeletonDetail } from '../components/Skeleton.jsx'
+import ErroCarga from '../components/ErroCarga.jsx'
 import {
   listClientes, listAgendamentos, getAgendamento, saveAgendamento,
 } from '../lib/db.js'
@@ -36,7 +37,7 @@ export default function AgendamentoForm() {
   const [erro, setErro] = useState('')
   // Na edição o formulário só aparece com os dados carregados: salvar antes sobrescreveria o registro com campos vazios.
   const [carregado, setCarregado] = useState(!editando)
-  const [erroCarga, setErroCarga] = useState(false)
+  const [erroCarga, setErroCarga] = useState(null)
   const [tentativa, setTentativa] = useState(0)
 
   useEffect(() => { listClientes().then(setClientes).catch(() => {}) }, [])
@@ -53,11 +54,11 @@ export default function AgendamentoForm() {
       setData(a.data); setHora(hhmm(a.hora)); setDuracao(a.duracao_min); setStatus(a.status)
       setObs(a.observacoes || '')
       setCarregado(true)
-    }).catch(() => { if (ativo) setErroCarga(true) })
+    }).catch((e) => { if (ativo) setErroCarga(e || new Error('falha')) })
     return () => { ativo = false }
   }, [id, editando, tentativa])
 
-  const tentarDeNovo = () => { setErroCarga(false); setTentativa((n) => n + 1) }
+  const tentarDeNovo = () => { setErroCarga(null); setTentativa((n) => n + 1) }
 
   // carrega outros agendamentos do dia para checar conflito
   useEffect(() => {
@@ -100,12 +101,7 @@ export default function AgendamentoForm() {
     <div className="app">
       <TopBar title={editando ? 'Agendamento' : 'Novo agendamento'} />
       <div className="content">
-        {erroCarga && (
-          <>
-            <div className="notice">Não foi possível carregar. Verifique a conexão e tente de novo.</div>
-            <button type="button" className="btn secondary" onClick={tentarDeNovo}>Tentar de novo</button>
-          </>
-        )}
+        {erroCarga && <ErroCarga erro={erroCarga} onRetry={tentarDeNovo} />}
         {!carregado && !erroCarga && <SkeletonDetail />}
         {carregado && (<>
           {/* Cliente */}

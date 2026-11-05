@@ -4,6 +4,7 @@ import TopBar from '../components/TopBar.jsx'
 import PhotoCapture from '../components/PhotoCapture.jsx'
 import { getAtendimento, saveAtendimento, deleteAtendimento, uploadFoto, signedUrl, removeFoto, patchAgendamento } from '../lib/db.js'
 import { SkeletonDetail } from '../components/Skeleton.jsx'
+import ErroCarga from '../components/ErroCarga.jsx'
 import { useToast } from '../components/Toast.jsx'
 import { useAuth } from '../auth/AuthContext.jsx'
 
@@ -26,7 +27,7 @@ export default function AtendimentoForm() {
   const [erro, setErro] = useState('')
   // Na edição o formulário só aparece com o atendimento carregado: salvar antes sobrescreveria o registro com campos vazios.
   const [carregado, setCarregado] = useState(!editando)
-  const [erroCarga, setErroCarga] = useState(false)
+  const [erroCarga, setErroCarga] = useState(null)
   const [tentativa, setTentativa] = useState(0)
 
   useEffect(() => {
@@ -42,11 +43,11 @@ export default function AtendimentoForm() {
       setTipo(at.tipo); setData(at.data); setServico(at.servico || ''); setObs(at.observacoes || '')
       setFotos(carregadas)
       setCarregado(true)
-    }).catch(() => { if (ativo) setErroCarga(true) })
+    }).catch((e) => { if (ativo) setErroCarga(e || new Error('falha')) })
     return () => { ativo = false }
   }, [atId, tentativa])
 
-  const tentarDeNovo = () => { setErroCarga(false); setTentativa((n) => n + 1) }
+  const tentarDeNovo = () => { setErroCarga(null); setTentativa((n) => n + 1) }
 
   const salvar = async () => {
     setBusy(true); setErro('')
@@ -90,12 +91,7 @@ export default function AtendimentoForm() {
     <div className="app">
       <TopBar title={editando ? 'Atendimento' : 'Novo atendimento'} />
       <div className="content">
-        {erroCarga && (
-          <>
-            <div className="notice">Não foi possível carregar. Verifique a conexão e tente de novo.</div>
-            <button type="button" className="btn secondary" onClick={tentarDeNovo}>Tentar de novo</button>
-          </>
-        )}
+        {erroCarga && <ErroCarga erro={erroCarga} onRetry={tentarDeNovo} />}
         {!carregado && !erroCarga && <SkeletonDetail />}
         {carregado && (<>
           <div className="card">

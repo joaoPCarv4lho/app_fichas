@@ -7,6 +7,7 @@ import { FICHAS, TERMO_CONSENTIMENTO } from '../data/fichaSchemas.js'
 import { getCliente, getAnamnese, saveAnamnese } from '../lib/db.js'
 import { useToast } from '../components/Toast.jsx'
 import { SkeletonDetail } from '../components/Skeleton.jsx'
+import ErroCarga from '../components/ErroCarga.jsx'
 
 export default function AnamneseForm() {
   const { id, tipo } = useParams()
@@ -22,7 +23,7 @@ export default function AnamneseForm() {
   const [erro, setErro] = useState('')
   // O formulário só aparece com cliente e ficha existente carregados: salvar antes sobrescreveria a ficha real com respostas vazias.
   const [carregado, setCarregado] = useState(false)
-  const [erroCarga, setErroCarga] = useState(false)
+  const [erroCarga, setErroCarga] = useState(null)
   const [tentativa, setTentativa] = useState(0)
 
   useEffect(() => {
@@ -37,11 +38,11 @@ export default function AnamneseForm() {
         setAssinatura(a.consent_assinatura || null)
       }
       setCarregado(true)
-    }).catch(() => { if (ativo) setErroCarga(true) })
+    }).catch((e) => { if (ativo) setErroCarga(e || new Error('falha')) })
     return () => { ativo = false }
   }, [id, tipo, tentativa])
 
-  const tentarDeNovo = () => { setErroCarga(false); setTentativa((n) => n + 1) }
+  const tentarDeNovo = () => { setErroCarga(null); setTentativa((n) => n + 1) }
 
   if (!schema) return <div className="app"><TopBar title="Ficha" /><div className="content"><div className="notice">Tipo de ficha inválido.</div></div></div>
 
@@ -69,12 +70,7 @@ export default function AnamneseForm() {
     <div className="app">
       <TopBar title={`${schema.emoji} ${schema.titulo}`} />
       <div className="content">
-        {erroCarga && (
-          <>
-            <div className="notice">Não foi possível carregar a ficha. Verifique a conexão e tente de novo.</div>
-            <button type="button" className="btn secondary" onClick={tentarDeNovo}>Tentar de novo</button>
-          </>
-        )}
+        {erroCarga && <ErroCarga erro={erroCarga} onRetry={tentarDeNovo} />}
         {!carregado && !erroCarga && <SkeletonDetail />}
         {carregado && (<>
         {cliente && <p className="muted" style={{ marginTop: 0 }}>Cliente: <strong>{cliente.nome}</strong></p>}
