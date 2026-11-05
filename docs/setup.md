@@ -35,7 +35,7 @@ Linhas numeradas seguem o catálogo do toolkit (`docs/tools/README.md`). "Escopo
 | 03 | RTK | Bloqueado: instalação e hook são globais (ver seção 4) | máquina | bloqueado | `command -v rtk`: ausente |
 | 04 | Ponytail | Reaproveitado; modo `full` registrado em `AGENTS.md` | usuário | reaproveitado | Plugin ativo (baseline); modo `full` ativo nas sessões deste setup |
 | 05 | Caveman | Reaproveitado; conversa concisa, docs normais | usuário | reaproveitado | Plugin ativo (baseline); regra em `AGENTS.md` |
-| 06 | ESLint | Adaptado a JS/React; gate de 350 linhas; self-check das regras; `warn` onde há violação existente | projeto | validado | `npm run check` exit 0: lint 0 erros / 7 avisos na época (1 `no-unused-vars` + 6 `exhaustive-deps`, após a regra inline `jsx-uses/mark-used`; antes 42 + 6, com 41 falsos positivos de JSX, ver `docs/quality.md`); hoje 0 erros / 3 avisos (1 + 2), os 3 para a rodada 2, `verify:rules` 3x ok, build ok (Task 3 e 5) |
+| 06 | ESLint | Adaptado a JS/React; gate de 350 linhas; self-check das regras; `warn` onde há violação existente | projeto | validado | `npm run check` exit 0: lint 0 erros / 7 avisos na época (1 `no-unused-vars` + 6 `exhaustive-deps`, após a regra inline `jsx-uses/mark-used`; antes 42 + 6, com 41 falsos positivos de JSX, ver `docs/quality.md`); hoje 0 erros / 0 avisos (resolvidos na rodada 2), `verify:rules` 3x ok, build ok (Task 3 e 5) |
 | 07 | Graphify | Bloqueado: precisa de `uv`, instalação global; ganho baixo (ver seção 4) | máquina | bloqueado | `command -v uv` e `command -v graphify`: ausentes |
 | 08 | Obsidian | Memória externa opcional; a memória nativa do Claude basta | usuário | inaplicável | Decisão da spec; sem vault no projeto |
 | 09 | Memória do Claude | Reaproveitada a memória nativa (seção 7) | usuário | reaproveitado | Pasta de memória do projeto contém `MEMORY.md` e `app-fichas-projeto.md` |
@@ -138,7 +138,7 @@ Linha de base (antes do setup) vs. final. Ambos medidos com os comandos indicado
 | Check | Antes | Depois | Observação |
 |---|---|---|---|
 | `npm run build` | passa (Vite 5.4.21, PWA 16 entradas, aviso de chunk >500 kB) | passa (parte de `npm run check`, exit 0) | O aviso de chunk grande é anterior ao setup |
-| `npm run lint` | não existia | 0 erros, 3 avisos | 1 `no-unused-vars` + 2 `exhaustive-deps` (histórico 42 + 6, depois 1 + 6, agora 1 + 2; os 3 ficam para a rodada 2; ver `docs/quality.md`) |
+| `npm run lint` | não existia | 0 erros, 0 avisos | histórico 42 + 6, depois 1 + 6, depois 1 + 2, zerado na rodada 2 (ver `docs/quality.md`) |
 | `npm run verify:rules` | não existia | 3 regras `ok` | `max-lines`, `no-direct-console`, `no-direct-data-access` |
 | `npm run check` | não existia | passa | lint + verify:rules + build |
 

@@ -6,7 +6,7 @@ Estado verificado em 2026-11-05 (Node 24, Windows). Cada número abaixo vem de u
 
 | Comando | O que faz |
 |---|---|
-| `npm run lint` | ESLint 9 sobre o projeto. Erros bloqueiam (saída ≠ 0); avisos não. |
+| `npm run lint` | ESLint 9 sobre o projeto. Erros bloqueiam (saída ≠ 0); a meta é também 0 avisos. |
 | `npm run verify:rules` | Self-check das regras locais em `eslint-rules/` (`quality/max-lines`, `quality/no-direct-console`, `quality/no-direct-data-access`). |
 | `npm run build` | Build de produção do Vite (`dist/`). Não publica. |
 | `npm test` | Testes de `src/lib/*.test.js` com o runner nativo `node:test` (sem dependência). |
@@ -23,8 +23,8 @@ Config em `eslint.config.mjs`, escopo `src/**/*.{js,jsx}` (as regras locais vêm
 |---|---|---|---|---|
 | `react-hooks/rules-of-hooks` | erro | 0 | `src/` | Manter em 0. |
 | `quality/max-lines` (350 linhas) | erro | 0 | `src/` | Manter em 0; dividir o arquivo antes de passar do limite. |
-| `no-unused-vars` | aviso | 1 | `src/` | Corrigir o aviso restante ao tocar o arquivo e subir a erro. Prefixo `_` ignora. |
-| `react-hooks/exhaustive-deps` | aviso | 2 | `src/` | Revisar caso a caso (corrigir dependência ou justificar); não silenciar em bloco. |
+| `no-unused-vars` | aviso | 0 | `src/` | Manter em 0; pode subir a erro. Prefixo `_` ignora. |
+| `react-hooks/exhaustive-deps` | aviso | 0 | `src/` | Manter em 0; corrigir a dependência, nunca silenciar com `eslint-disable`. |
 | `quality/no-direct-console` | desligada | n/a | n/a | Sem logger no projeto; ligar só se houver um. |
 | `quality/no-direct-data-access` | desligada | n/a | n/a | `lib/supabase` só é importado por `AuthContext` e `Login`; o acesso a dados já passa por `src/lib/db.js`. |
 
@@ -32,7 +32,7 @@ Também ativa `@eslint/js` recommended (em `src/`, `scripts/`, `vite.config.js` 
 
 Uma regra inline em `eslint.config.mjs` (`jsx-uses/mark-used`, sem dependência nova) marca como usados os componentes referenciados só em JSX, porque o projeto não usa `eslint-plugin-react`. Antes dela havia 42 avisos de `no-unused-vars`, 41 deles falsos positivos (medido com `npx eslint . -f json`); o que sobra é real (`AgendamentoDetail.jsx`, linha 44).
 
-Total do lint: 0 erros, 3 avisos (1 `no-unused-vars` + 2 `exhaustive-deps`: `Agenda.jsx` ABERTOS e `AgendamentoDetail.jsx` carregar; histórico 42 + 6, depois 1 + 6, agora 1 + 2; os 3 restantes ficam para a rodada 2). `verify:rules` imprime `ok` para as três regras locais.
+Total do lint: 0 erros, 0 avisos (histórico 42 + 6, depois 1 + 6, depois 1 + 2, resolvidos na rodada 2: `ABERTOS`/`FECHADOS` em escopo de módulo, `carregar` removido do efeito, variável sem uso). Convenções de erro: falha de carga mostra `ErroCarga` (nunca estado vazio); erro de salvar usa `mensagemDeErro` e aparece dentro da barra fixa; sem `alert`/`confirm` (`useToast`/`useConfirm`). `verify:rules` imprime `ok` para as três regras locais.
 
 ## Estratégia de teste real
 
