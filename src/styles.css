@@ -331,3 +331,11 @@ input[type=date] { min-height: 48px; }
   min-height: 120px; line-height: 1.55; resize: vertical;
 }
 .notes:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-050); }
+
+/* ---------- Diálogo de confirmação ---------- */
+.confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 110; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.confirm-card { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--sh-3); padding: 22px 20px 18px; width: 100%; max-width: 360px; }
+.confirm-card h2 { margin: 0 0 8px; font-size: 18px; }
+.confirm-card p { margin: 0 0 18px; color: var(--ink-2); font-size: 14.5px; }
+.confirm-actions { display: flex; gap: 10px; }
+.confirm-actions .btn { flex: 1; }
