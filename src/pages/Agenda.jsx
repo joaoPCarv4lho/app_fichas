@@ -15,7 +15,8 @@ export default function Agenda() {
   const navigate = useNavigate()
   const toast = useToast()
   const [aba, setAba] = useState('dia') // 'dia' | 'proximos'
-  const [dia, setDia] = useState(hojeISO())
+  const [hoje, setHoje] = useState(hojeISO())
+  const [dia, setDia] = useState(hoje)
   const [items, setItems] = useState(null)
   const [concluidos, setConcluidos] = useState(null) // null = escondido
   const [carregandoConc, setCarregandoConc] = useState(false)
@@ -27,10 +28,10 @@ export default function Agenda() {
     let ativo = true
     reqConc.current++
     setItems(null); setErro(null); setConcluidos(null); setCarregandoConc(false)
-    const q = aba === 'dia' ? { dia, status: ABERTOS } : { de: hojeISO(), status: ABERTOS }
+    const q = aba === 'dia' ? { dia, status: ABERTOS } : { de: hoje, status: ABERTOS }
     listAgendamentos(q).then((r) => ativo && setItems(r)).catch((e) => ativo && setErro(e || new Error('erro')))
     return () => { ativo = false }
-  }, [aba, dia, tentativa])
+  }, [aba, dia, hoje, tentativa])
 
   // PWA aberto de um dia para o outro: ao voltar a ficar visível, se o "hoje" mudou e a tela estava no hoje antigo, acompanha o novo hoje
   useEffect(() => {
@@ -41,6 +42,7 @@ export default function Agenda() {
       if (novo === ultimo) return
       const antigo = ultimo
       ultimo = novo
+      setHoje(novo)
       setDia((d) => (d === antigo ? novo : d))
     }
     document.addEventListener('visibilitychange', aoVoltar)
@@ -80,8 +82,8 @@ export default function Agenda() {
             <button className="nav" onClick={() => setDia(addDias(dia, 1))} aria-label="Próximo dia">›</button>
           </div>
         )}
-        {aba === 'dia' && dia !== hojeISO() && (
-          <button className="btn ghost sm" style={{ margin: '0 auto 12px', display: 'block' }} onClick={() => setDia(hojeISO())}>Voltar para hoje</button>
+        {aba === 'dia' && dia !== hoje && (
+          <button className="btn ghost sm" style={{ margin: '0 auto 12px', display: 'block' }} onClick={() => setDia(hoje)}>Voltar para hoje</button>
         )}
 
         {erro && <ErroCarga erro={erro} onRetry={() => setTentativa((t) => t + 1)} />}
