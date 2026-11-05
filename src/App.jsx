@@ -1,17 +1,22 @@
+import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './auth/AuthContext.jsx'
 import Login from './pages/Login.jsx'
 import PinLock from './pages/PinLock.jsx'
 import Agenda from './pages/Agenda.jsx'
-import AgendamentoForm from './pages/AgendamentoForm.jsx'
-import AgendamentoDetail from './pages/AgendamentoDetail.jsx'
 import Clientes from './pages/Clientes.jsx'
-import ClienteForm from './pages/ClienteForm.jsx'
-import ClienteDetail from './pages/ClienteDetail.jsx'
-import AnamneseForm from './pages/AnamneseForm.jsx'
-import AtendimentoForm from './pages/AtendimentoForm.jsx'
-import Configuracoes from './pages/Configuracoes.jsx'
 import NotConfigured from './pages/NotConfigured.jsx'
+import { SkeletonDetail } from './components/Skeleton.jsx'
+
+// Telas pesadas/raras viram chunks separados (entram no precache do SW, então funcionam offline).
+// Falha ao baixar um chunk rejeita o import, o React lança no render e o ErrorBoundary mostra "Recarregar".
+const AgendamentoForm = lazy(() => import('./pages/AgendamentoForm.jsx'))
+const AgendamentoDetail = lazy(() => import('./pages/AgendamentoDetail.jsx'))
+const ClienteForm = lazy(() => import('./pages/ClienteForm.jsx'))
+const ClienteDetail = lazy(() => import('./pages/ClienteDetail.jsx'))
+const AnamneseForm = lazy(() => import('./pages/AnamneseForm.jsx'))
+const AtendimentoForm = lazy(() => import('./pages/AtendimentoForm.jsx'))
+const Configuracoes = lazy(() => import('./pages/Configuracoes.jsx'))
 
 export default function App() {
   const { session, loading, locked, isSupabaseConfigured } = useAuth()
@@ -22,6 +27,7 @@ export default function App() {
   if (locked) return <PinLock />
 
   return (
+    <Suspense fallback={<div className="app"><div className="content"><SkeletonDetail /></div></div>}>
     <Routes>
       <Route path="/" element={<Agenda />} />
       <Route path="/agendamento/novo" element={<AgendamentoForm />} />
@@ -37,5 +43,6 @@ export default function App() {
       <Route path="/config" element={<Configuracoes />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </Suspense>
   )
 }
