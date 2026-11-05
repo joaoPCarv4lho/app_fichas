@@ -3,7 +3,7 @@ import { compressImage } from '../lib/image.js'
 
 // photos: array de { key, momento: 'antes'|'depois', preview, blob?, path? }
 // onChange(novoArray). Fotos novas trazem "blob" (pra upload); as já salvas
-// trazem "path" e "preview" (URL assinada).
+// trazem "path" e "preview" (URL assinada; nulo se ela falhou).
 export default function PhotoCapture({ photos, onChange }) {
   const inputRef = useRef(null)
   const [momento, setMomento] = useState('antes')
@@ -42,7 +42,9 @@ export default function PhotoCapture({ photos, onChange }) {
         <div className="photo-grid">
           {photos.map((p) => (
             <div className="ph" key={p.key}>
-              <img src={p.preview} alt={p.momento} />
+              {p.preview
+                ? <img src={p.preview} alt={p.momento} />
+                : <div className="muted" style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', fontSize: 12, padding: 6 }}>Foto indisponível agora</div>}
               <span className="tag">{p.momento}</span>
               <button type="button" className="rm" onClick={() => remove(p.key)}>×</button>
             </div>

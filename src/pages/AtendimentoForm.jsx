@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import TopBar from '../components/TopBar.jsx'
 import PhotoCapture from '../components/PhotoCapture.jsx'
 import { getAtendimento, saveAtendimento, deleteAtendimento, uploadFoto, signedUrl, removeFoto, patchAgendamento } from '../lib/db.js'
+import { SkeletonDetail } from '../components/Skeleton.jsx'
 import { useToast } from '../components/Toast.jsx'
 import { useAuth } from '../auth/AuthContext.jsx'
 
@@ -23,17 +24,29 @@ export default function AtendimentoForm() {
   const [fotos, setFotos] = useState([]) // { key, momento, preview, blob?, path? }
   const [busy, setBusy] = useState(false)
   const [erro, setErro] = useState('')
+  // Na edição o formulário só aparece com o atendimento carregado: salvar antes sobrescreveria o registro com campos vazios.
+  const [carregado, setCarregado] = useState(!editando)
+  const [erroCarga, setErroCarga] = useState(false)
+  const [tentativa, setTentativa] = useState(0)
 
   useEffect(() => {
-    if (!editando) return
+    if (!atId) return
+    let ativo = true
     getAtendimento(atId).then(async (at) => {
-      setTipo(at.tipo); setData(at.data); setServico(at.servico || ''); setObs(at.observacoes || '')
+      // foto com URL assinada que falhou continua na lista (preview nulo), senão seria apagada do registro ao salvar
       const carregadas = await Promise.all((at.fotos || []).map(async (f) => ({
-        key: crypto.randomUUID(), momento: f.momento, path: f.path, preview: await signedUrl(f.path),
+        key: crypto.randomUUID(), momento: f.momento, path: f.path,
+        preview: await signedUrl(f.path).catch(() => null),
       })))
-      setFotos(carregadas.filter((f) => f.preview))
-    }).catch((e) => setErro(e.message))
-  }, [atId])
+      if (!ativo) return
+      setTipo(at.tipo); setData(at.data); setServico(at.servico || ''); setObs(at.observacoes || '')
+      setFotos(carregadas)
+      setCarregado(true)
+    }).catch(() => { if (ativo) setErroCarga(true) })
+    return () => { ativo = false }
+  }, [atId, tentativa])
+
+  const tentarDeNovo = () => { setErroCarga(false); setTentativa((n) => n + 1) }
 
   const salvar = async () => {
     setBusy(true); setErro('')
@@ -77,6 +90,14 @@ export default function AtendimentoForm() {
     <div className="app">
       <TopBar title={editando ? 'Atendimento' : 'Novo atendimento'} />
       <div className="content">
+        {erroCarga && (
+          <>
+            <div className="notice">Não foi possível carregar. Verifique a conexão e tente de novo.</div>
+            <button type="button" className="btn secondary" onClick={tentarDeNovo}>Tentar de novo</button>
+          </>
+        )}
+        {!carregado && !erroCarga && <SkeletonDetail />}
+        {carregado && (<>
         <div className="card">
           <div className="field">
             <label>Tipo de serviço</label>
@@ -111,6 +132,7 @@ export default function AtendimentoForm() {
             <button className="btn" disabled={busy} onClick={salvar}>{busy ? 'Salvando…' : 'Salvar atendimento'}</button>
           </div>
         </div>
+        </>)}
       </div>
     </div>
   )
