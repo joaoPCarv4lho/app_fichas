@@ -43,7 +43,7 @@
 
 ---
 
-## Tarefa 0: Baseline antes de editar
+## Task 0: Baseline antes de editar
 
 **Files:** nenhum arquivo do projeto alterado. Saída em `C:\Users\joaod\AppData\Local\Temp\claude\140954f0fa45357a\42c23978-9c9f-408e-b113-df2905f226a5\scratchpad\baseline.txt`.
 
@@ -67,7 +67,7 @@ Expected: build termina com `built in`. `npm audit` e `outdated` registram o que
 
 ---
 
-## Tarefa 1: Fundação e contexto (docs + AGENTS.md + CLAUDE.md)
+## Task 1: Fundação e contexto (docs + AGENTS.md + CLAUDE.md)
 
 **Files:**
 - Create: `PRODUCT.md`, `AGENTS.md`, `CLAUDE.md`, `docs/architecture.md`, `docs/design.md`, `docs/onboarding.md`
@@ -125,7 +125,7 @@ Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"
 
 ---
 
-## Tarefa 2: Ferramentas do projeto (Context7, agent-browser, skills)
+## Task 2: Ferramentas do projeto (Context7, agent-browser, skills)
 
 **Files:**
 - Create: `.mcp.json`; skills de projeto no caminho definido por `$TK/docs/tools/16-vercel-skills.md#local-installation`; lockfile de skills se o guia criar um
@@ -184,7 +184,7 @@ Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"
 
 ---
 
-## Tarefa 3: Qualidade — ESLint, gate de 350 linhas, `npm run check`
+## Task 3: Qualidade — ESLint, gate de 350 linhas, `npm run check`
 
 **Files:**
 - Create: `eslint.config.mjs`, `eslint-rules/utils.cjs`, `eslint-rules/core-rules.cjs`, `eslint-rules/index.cjs`, `scripts/verify-quality-rules.mjs`
@@ -286,7 +286,7 @@ Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"
 
 ---
 
-## Tarefa 4: Revisões somente leitura (PostgreSQL e segurança base)
+## Task 4: Revisões somente leitura (PostgreSQL e segurança base)
 
 **Files:**
 - Create: `docs/prompts/security-review.md`
@@ -323,7 +323,7 @@ Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"
 
 ---
 
-## Tarefa 5: Harness2 (adaptação nativa), smoke cases e `docs/quality.md`
+## Task 5: Harness2 (adaptação nativa), smoke cases e `docs/quality.md`
 
 **Files:**
 - Create: `docs/quality.md`
@@ -371,7 +371,7 @@ Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"
 
 ---
 
-## Tarefa 6: `docs/setup.md` (matriz final, evidências, pendências)
+## Task 6: `docs/setup.md` (matriz final, evidências, pendências)
 
 **Files:**
 - Create: `docs/setup.md`
@@ -414,7 +414,7 @@ Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"
 
 ---
 
-## Tarefa 7: Validação integrada, revisão por risco e relatório final
+## Task 7: Validação integrada, revisão por risco e relatório final
 
 **Files:** nenhum novo arquivo obrigatório. Correções pequenas dentro dos arquivos das Tarefas 1 a 6 só se a revisão achar problema real.
 
