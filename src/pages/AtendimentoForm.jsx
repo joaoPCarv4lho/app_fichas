@@ -82,7 +82,14 @@ export default function AtendimentoForm() {
       // veio de um agendamento? fecha o ciclo: vincula + marca realizado
       const agId = params.get('agendamento')
       if (agId && !editando) {
-        await patchAgendamento(agId, { status: 'realizado', atendimento_id: saved.id })
+        try {
+          await patchAgendamento(agId, { status: 'realizado', atendimento_id: saved.id })
+        } catch (e) {
+          if (e.code !== 'SEM_LINHAS') throw e
+          toast('Atendimento salvo, mas o agendamento não existe mais.')
+          navigate(`/cliente/${id}`, { replace: true })
+          return
+        }
         toast('Atendimento registrado')
         navigate('/', { replace: true })
       } else {
