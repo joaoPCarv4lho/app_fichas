@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import TopBar from '../components/TopBar.jsx'
 import { useToast } from '../components/Toast.jsx'
@@ -18,8 +18,6 @@ export default function AgendamentoDetail() {
   const [tentativa, setTentativa] = useState(0)
   const [busy, setBusy] = useState(false)
 
-  // recarrega após mudar status (sem cleanup: só roda por ação da usuária)
-  const recarregar = useCallback(() => getAgendamento(id).then(setAg), [id])
   useEffect(() => {
     let ativo = true
     setErro(null); setAg(null)
@@ -40,15 +38,15 @@ export default function AgendamentoDetail() {
     try {
       await patchAgendamento(id, { status: novo })
       if (sair) { toast(`Marcado como ${STATUS[novo].label.toLowerCase()}`); navigate('/', { replace: true }) }
-      else { toast(`Marcado como ${STATUS[novo].label.toLowerCase()}`); await recarregar(); setBusy(false) }
+      else { toast(`Marcado como ${STATUS[novo].label.toLowerCase()}`); setAg((a) => ({ ...a, status: novo })); setBusy(false) }
     } catch (e) { toast(mensagemDeErro(e), false); setBusy(false) }
   }
 
   const cancelar = async () => {
-    if (await confirmar({ titulo: 'Cancelar este agendamento?', texto: 'Ele sairá da lista de abertos. Você pode reabrir depois.', ok: 'Cancelar agendamento', perigo: true })) mudar('cancelado', true)
+    if (await confirmar({ titulo: 'Cancelar este agendamento?', texto: 'Ele sairá da lista de abertos. Você pode reabrir depois.', ok: 'Cancelar agendamento', voltar: 'Manter agendamento', perigo: true })) mudar('cancelado', true)
   }
   const faltou = async () => {
-    if (await confirmar({ titulo: 'Marcar como faltou?', texto: 'Você pode reabrir depois.', ok: 'Marcar como faltou' })) mudar('faltou', true)
+    if (await confirmar({ titulo: 'Marcar como faltou?', texto: 'Você pode reabrir depois.', ok: 'Marcar como faltou', voltar: 'Voltar' })) mudar('faltou', true)
   }
 
   const excluir = async () => {

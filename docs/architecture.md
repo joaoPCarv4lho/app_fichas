@@ -61,7 +61,7 @@ SQL manual, colado no SQL Editor do Supabase, nesta ordem: `supabase/schema.sql`
 
 - `mensagemDeErro(e)` (`src/lib/erros.js`) converte qualquer erro em texto pt-BR (sem conexão, sessão expirada, permissão, duplicado, genérico) e registra o original no console.
 - Toast de erro: `useToast()(msg, false)` mostra faixa vermelha com `role="alert"` por 5 s.
-- `useConfirm()` (`ConfirmDialog.jsx`) devolve `confirmar({ titulo, texto, ok, perigo })` → Promise<boolean>; substitui `confirm()`/`alert()` nativos.
+- `useConfirm()` (`ConfirmDialog.jsx`) devolve `confirmar({ titulo, texto, ok, voltar, perigo })` → Promise<boolean> (`voltar` = rótulo do botão de voltar, padrão "Cancelar"; o diálogo fecha como `false` ao mudar de rota ou de sessão); substitui `confirm()`/`alert()` nativos.
 - `ErrorBoundary` envolve o `App` e mostra "Algo deu errado" + Recarregar. Limitação do React: não captura erros em handlers de evento nem código assíncrono; esses usam `mensagemDeErro` + Toast.
 
 ## Decisões

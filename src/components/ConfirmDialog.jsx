@@ -1,20 +1,24 @@
 import { createContext, useCallback, useContext, useEffect, useId, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
+import { useAuth } from '../auth/AuthContext.jsx'
 
 const ConfirmContext = createContext(() => Promise.resolve(false))
 export const useConfirm = () => useContext(ConfirmContext)
 
-// confirmar({ titulo, texto, ok = 'Confirmar', perigo = false }) -> Promise<boolean>
+// confirmar({ titulo, texto, ok = 'Confirmar', voltar = 'Cancelar', perigo = false }) -> Promise<boolean>
 export function ConfirmProvider({ children }) {
   const [dlg, setDlg] = useState(null)
   const resolver = useRef(null)
   const cancelRef = useRef(null)
   const antes = useRef(null)
   const uid = useId()
+  const { pathname } = useLocation()
+  const { session } = useAuth()
 
   const confirmar = useCallback((opts) => new Promise((resolve) => {
-    resolver.current?.(false) // diálogo anterior ainda aberto: cancela
+    if (resolver.current) resolver.current(false) // diálogo anterior ainda aberto: cancela (mantém o alvo do foco)
+    else antes.current = document.activeElement
     resolver.current = resolve
-    antes.current = document.activeElement
     setDlg(opts)
   }), [])
 
@@ -24,6 +28,9 @@ export function ConfirmProvider({ children }) {
     setDlg(null)
     antes.current?.focus?.() // devolve o foco a quem abriu
   }, [])
+
+  // rota ou sessão mudou: fecha como cancelado, para a ação antiga não rodar numa tela que já não existe
+  useEffect(() => { if (resolver.current) fechar(false) }, [pathname, session, fechar])
 
   useEffect(() => {
     if (!dlg) return
@@ -58,7 +65,7 @@ export function ConfirmProvider({ children }) {
             <h2 id={`${uid}-t`}>{dlg.titulo}</h2>
             {dlg.texto && <p id={`${uid}-d`}>{dlg.texto}</p>}
             <div className="confirm-actions">
-              <button type="button" ref={cancelRef} className="btn ghost" onClick={() => fechar(false)}>Cancelar</button>
+              <button type="button" ref={cancelRef} className="btn ghost" onClick={() => fechar(false)}>{dlg.voltar || 'Cancelar'}</button>
               <button type="button" className={`btn ${dlg.perigo ? 'danger' : ''}`} onClick={() => fechar(true)}>{dlg.ok || 'Confirmar'}</button>
             </div>
           </div>
