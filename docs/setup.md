@@ -137,7 +137,7 @@ Linha de base (antes do setup) vs. final. Ambos medidos com os comandos indicado
 
 | Check | Antes | Depois | Observação |
 |---|---|---|---|
-| `npm run build` | passa (Vite 5.4.21, PWA 16 entradas, aviso de chunk >500 kB) | passa (parte de `npm run check`, exit 0) | O aviso de chunk grande é anterior ao setup |
+| `npm run build` | passa (Vite 5.4.21, PWA 16 entradas, aviso de chunk >500 kB; rodada 4: pacote principal 820 kB para 424 kB, sem aviso, PWA 29 entradas) | passa (parte de `npm run check`, exit 0) | O aviso de chunk grande é anterior ao setup |
 | `npm run lint` | não existia | 0 erros, 0 avisos | histórico 42 + 6, depois 1 + 6, depois 1 + 2, zerado na rodada 2 (ver `docs/quality.md`) |
 | `npm run verify:rules` | não existia | 3 regras `ok` | `max-lines`, `no-direct-console`, `no-direct-data-access` |
 | `npm run check` | não existia | passa | lint + verify:rules + test + build |
@@ -207,6 +207,7 @@ Próxima ação proposta para cada um (todas dependem de o usuário aprovar esco
 2. **Medium, fotos de saúde ficam no Storage** após excluir cliente ou foto: tarefa própria para apagar objetos junto da exclusão e limpar órfãos (impacto LGPD; mexe em `db.js` e telas).
 3. **Medium, re-salvar a anamnese regrava termo atual com assinatura antiga:** tarefa própria para atualizar consentimento só quando a assinatura mudar.
 4. **Low (PostgreSQL e segurança):** referência cross-tenant de `cliente_id`, índices em FKs, `auth.uid()` sem `(select ...)`, checks de integridade, PIN sem limite de tentativas, `jspdf` e `react-router` teóricos, `serialize-javascript`/`source-map-js` só no build. Agrupar por tema e priorizar com o usuário.
+5b. **PWA (rodada 4):** atualização por aviso e rotas lazy implementadas; o fluxo de atualização (precisa de duas versões publicadas) e as telas lazy não foram testados no app, só o build. Primeira publicação com `prompt`: os aparelhos que ainda rodam a versão `autoUpdate` se atualizam e recarregam sozinhos mais uma vez (uma última vez); daí em diante só por aviso.
 5a. **Hospedagem (rodada 4):** cabeçalhos de segurança, cache e rewrite estreito estão no `vercel.json` (não validados em produção por mim; o controlador valida em deploy de prévia). Pendências: promover a CSP de `Report-Only` a enforcada após teste logado com DevTools aberto; o PIN é trava de conveniência, não segurança; remoto git privado é decisão do usuário.
 5. **Propostas confirmadas pelo revisor da Task 4 (só propostas, nada alterado):** `src/pages/AtendimentoForm.jsx:69-71` remove as fotos do Storage **antes** de apagar o atendimento no banco, então as fotos se perdem se a exclusão falhar (inverter a ordem ou tratar falha); ~~`src/pages/Configuracoes.jsx:42` remove o PIN sem pedir o PIN atual~~ (corrigido: pede o PIN atual). Pendência: `PinLock` sem limite de tentativas; hash SHA-256 de 4 dígitos não protege contra extração do localStorage.
 6. **Hipóteses abertas, só o usuário confirma no painel:** cadastro público do Supabase Auth ligado ou não; (`pg_policies` já conferido, ver item 1); validade do JWT e política de senha.

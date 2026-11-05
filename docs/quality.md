@@ -75,6 +75,18 @@ Resultados dos smoke cases (4 PASS, 4 não rodados), com modelo, avaliador e lim
 
 Usar `docs/prompts/security-review.md` (somente leitura, sem correções automáticas, sem sondar produção, sem enviar código a serviços externos). Relatórios vão para o diretório irmão `..\app_fichas-private\reviews\`. Repetir após mudança em autenticação, RLS, storage ou dependências de produção.
 
+## Tamanho do bundle (rodada 4)
+
+| Chunk | Antes | Depois |
+|---|---|---|
+| Entrada `index-*.js` | 820,20 kB (251,98 kB gzip) | 424,14 kB (122,93 kB gzip) |
+| `pdf-*.js` (jsPDF, sob demanda) | no principal | 359,59 kB |
+| Páginas lazy (7 chunks) | no principal | 2,6 a 7,1 kB cada |
+| `html2canvas`, `index.es`, `purify` | já separados | iguais (201, 151, 22 kB, só carregam ao gerar PDF) |
+| Precache do SW | 18 entradas, 1194 KiB | 29 entradas, 1204 KiB |
+
+O aviso de chunk >500 kB some. O que sobra na entrada: React, react-router, supabase-js e as telas eager. Medido só pelo build, não no aparelho.
+
 ## Dependências
 
 `npm audit` consulta o registro npm (envia o manifesto). Nenhuma correção foi aplicada (`npm audit fix` não foi rodado, por exigir `--force` e versões major incompatíveis).
