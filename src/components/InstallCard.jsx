@@ -29,7 +29,7 @@ export default function InstallCard() {
         </>
       ) : isIOS ? (
         <p className="meta" style={{ marginTop: 0 }}>
-          No iPhone (Safari): toque em <strong>Compartilhar</strong> (o quadrado com a seta ⬆️) na barra de baixo → role e toque em <strong>Adicionar à Tela de Início</strong>.
+          No iPhone (Safari): toque em <strong>Compartilhar</strong> (o quadrado com a seta ⬆️; na barra de baixo no iPhone, no topo no iPad) → role e toque em <strong>Adicionar à Tela de Início</strong>.
         </p>
       ) : (
         <p className="meta" style={{ marginTop: 0 }}>
