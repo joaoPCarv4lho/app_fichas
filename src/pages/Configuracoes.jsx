@@ -22,7 +22,7 @@ export default function Configuracoes() {
 
   const confirmarRemocao = async () => {
     setErro(''); setMsg('')
-    if (!(await verifyPin(pinAtual))) { setErro('PIN incorreto.'); return }
+    if (!(await verifyPin(pinAtual))) { setErro('PIN incorreto.'); setPinAtual(''); return }
     removePin()
     setRemovendo(false); setPinAtual(''); setMsg('PIN removido.')
   }
@@ -49,13 +49,14 @@ export default function Configuracoes() {
           </p>
           {hasPin ? (
             removendo ? (
-              <>
+              <form onSubmit={(e) => { e.preventDefault(); confirmarRemocao() }}>
                 <div className="field">
                   <label>PIN atual</label>
                   <input type="password" inputMode="numeric" maxLength={4} value={pinAtual} onChange={(e) => setPinAtual(e.target.value.replace(/\D/g, ''))} />
                 </div>
-                <button className="btn" onClick={confirmarRemocao}>Confirmar</button>
-              </>
+                <button className="btn">Confirmar</button>
+                <button type="button" className="btn ghost" onClick={() => { setRemovendo(false); setPinAtual(''); setErro('') }}>Cancelar</button>
+              </form>
             ) : (
               <button className="btn ghost" onClick={() => { setRemovendo(true); setErro(''); setMsg('') }}>Remover PIN</button>
             )
