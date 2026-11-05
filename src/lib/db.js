@@ -3,7 +3,8 @@ import { exigeLinhas } from './linhas.js'
 
 async function uid() {
   // getSession lê a sessão local (sem ida à rede); sem usuária, falha como 401 em vez de gravar user_id vazio
-  const { data } = await supabase.auth.getSession()
+  const { data, error } = await supabase.auth.getSession()
+  if (error) throw error
   const id = data.session?.user?.id
   if (!id) throw Object.assign(new Error('sem sessao'), { status: 401 })
   return id
