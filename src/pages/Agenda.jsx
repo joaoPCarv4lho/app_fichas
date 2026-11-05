@@ -32,6 +32,21 @@ export default function Agenda() {
     return () => { ativo = false }
   }, [aba, dia, tentativa])
 
+  // PWA aberto de um dia para o outro: ao voltar a ficar visível, se o "hoje" mudou e a tela estava no hoje antigo, acompanha o novo hoje
+  useEffect(() => {
+    let ultimo = hojeISO()
+    const aoVoltar = () => {
+      if (document.visibilityState !== 'visible') return
+      const novo = hojeISO()
+      if (novo === ultimo) return
+      const antigo = ultimo
+      ultimo = novo
+      setDia((d) => (d === antigo ? novo : d))
+    }
+    document.addEventListener('visibilitychange', aoVoltar)
+    return () => document.removeEventListener('visibilitychange', aoVoltar)
+  }, [])
+
   const verConcluidos = () => {
     const req = ++reqConc.current
     setCarregandoConc(true)
