@@ -12,5 +12,6 @@ export function mensagemDeErro(e) {
     return 'Sua sessão expirou. Entre de novo.'
   if (codigo === '42501' || texto.includes('row-level security')) return 'Você não tem permissão para fazer isso.'
   if (codigo === '23505') return 'Já existe um registro igual.'
+  if (codigo === 'PGRST116') return 'Registro não encontrado.'
   return 'Não foi possível concluir. Tente de novo.'
 }

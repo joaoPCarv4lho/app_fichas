@@ -44,3 +44,6 @@ test('registra o erro no console', (t) => {
   mensagemDeErro(new Error('boom'))
   assert.equal(m.mock.callCount(), 1)
 })
+test('registro não encontrado: PGRST116', (t) => {
+  assert.equal(msg(t, { code: 'PGRST116', message: 'x' }), 'Registro não encontrado.')
+})
