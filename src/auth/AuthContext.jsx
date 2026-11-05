@@ -48,7 +48,10 @@ export function AuthProvider({ children }) {
   const lock = useCallback(() => { if (localStorage.getItem(PIN_KEY)) setLocked(true) }, [])
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut()
+    // signOut global mantém a sessão local se a requisição falha (offline/5xx) e devolve {error}:
+    // nesse caso encerra só este aparelho. Se o logout local lançar, a exceção sobe e o PIN não é removido.
+    const { error } = await supabase.auth.signOut()
+    if (error) await supabase.auth.signOut({ scope: 'local' })
     setSession(null)
   }, [])
 

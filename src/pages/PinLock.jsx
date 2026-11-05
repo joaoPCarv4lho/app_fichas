@@ -16,8 +16,8 @@ export default function PinLock() {
       if (!ok) { setErro(true); setTimeout(() => setPin(''), 400) }
     }
   }
-  // 1º toque só pede confirmação; 2º sai e, só depois de a sessão cair, remove o PIN
-  // (se signOut falhar, o PIN continua valendo e a sessão não fica aberta sem trava)
+  // 1º toque só pede confirmação; 2º sai e, só depois de a sessão local cair, remove o PIN
+  // (signOut sempre encerra a sessão deste aparelho, mesmo offline; se lançar, o PIN continua valendo)
   const esqueci = async () => {
     if (!confirma) { setConfirma(true); return }
     await signOut()

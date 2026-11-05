@@ -49,6 +49,7 @@ UI (páginas) → `src/lib/db.js` → Supabase. As páginas chamam funções com
 
 - Login por e-mail e senha (`signInWithPassword`); não há tela de cadastro. Configuração pretendida: signup público desabilitado no Supabase (não verificado no painel).
 - `AuthContext` expõe `session`, `locked`, `hasPin`, `isAdmin`, `setupPin`, `verifyPin`, `removePin`, `lock`, `signOut`.
+- `signOut` encerra sempre a sessão deste aparelho: se o logout global falhar (offline/5xx, o supabase-js mantém a sessão local e devolve `{error}`), repete com `scope: 'local'`; só então o PIN pode ser removido ("Esqueci o PIN"), senão um recarregamento restauraria a sessão sem PIN.
 - Trava por PIN: SHA-256 do PIN em `localStorage` (chave `fichas_pin_hash`); o app abre bloqueado se há PIN.
 - `isAdmin` = `session.user.app_metadata.role === 'admin'`. O front só esconde botões; a exclusão é imposta no servidor por `supabase/roles.sql`.
 
