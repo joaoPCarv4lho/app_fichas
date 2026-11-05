@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import TopBar from '../components/TopBar.jsx'
 import { useToast } from '../components/Toast.jsx'
+import { SkeletonDetail } from '../components/Skeleton.jsx'
 import {
   listClientes, listAgendamentos, getAgendamento, saveAgendamento,
 } from '../lib/db.js'
@@ -33,20 +34,30 @@ export default function AgendamentoForm() {
   const [doDia, setDoDia] = useState([]) // outros agendamentos do dia (p/ conflito)
   const [busy, setBusy] = useState(false)
   const [erro, setErro] = useState('')
+  // Na edição o formulário só aparece com os dados carregados: salvar antes sobrescreveria o registro com campos vazios.
+  const [carregado, setCarregado] = useState(!editando)
+  const [erroCarga, setErroCarga] = useState(false)
+  const [tentativa, setTentativa] = useState(0)
 
   useEffect(() => { listClientes().then(setClientes).catch(() => {}) }, [])
 
   useEffect(() => {
     if (!editando) return
+    let ativo = true
     getAgendamento(id).then((a) => {
+      if (!ativo) return
       setModo(a.cliente_id ? 'cadastrada' : 'avulso')
       setClienteId(a.cliente_id || '')
       setNomeAvulso(a.nome_avulso || ''); setTelAvulso(a.telefone_avulso || '')
       setTipo(a.tipo || ''); setServico(a.servico || '')
       setData(a.data); setHora(hhmm(a.hora)); setDuracao(a.duracao_min); setStatus(a.status)
       setObs(a.observacoes || '')
-    }).catch((e) => setErro(e.message))
-  }, [id])
+      setCarregado(true)
+    }).catch(() => { if (ativo) setErroCarga(true) })
+    return () => { ativo = false }
+  }, [id, editando, tentativa])
+
+  const tentarDeNovo = () => { setErroCarga(false); setTentativa((n) => n + 1) }
 
   // carrega outros agendamentos do dia para checar conflito
   useEffect(() => {
@@ -89,6 +100,14 @@ export default function AgendamentoForm() {
     <div className="app">
       <TopBar title={editando ? 'Agendamento' : 'Novo agendamento'} />
       <div className="content">
+        {erroCarga && (
+          <>
+            <div className="notice">Não foi possível carregar. Verifique a conexão e tente de novo.</div>
+            <button type="button" className="btn secondary" onClick={tentarDeNovo}>Tentar de novo</button>
+          </>
+        )}
+        {!carregado && !erroCarga && <SkeletonDetail />}
+        {carregado && (<>
         {/* Cliente */}
         <div className="section-title">Cliente</div>
         <div className="card">
@@ -186,6 +205,7 @@ export default function AgendamentoForm() {
             <button className="btn" disabled={busy} onClick={salvar}>{busy ? 'Salvando…' : 'Salvar'}</button>
           </div>
         </div>
+        </>)}
       </div>
     </div>
   )

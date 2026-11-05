@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import TopBar from '../components/TopBar.jsx'
 import { getCliente, saveCliente } from '../lib/db.js'
 import { useToast } from '../components/Toast.jsx'
+import { SkeletonDetail } from '../components/Skeleton.jsx'
 
 const VAZIO = { nome: '', nascimento: '', whatsapp: '', email: '', como_conheceu: '', observacoes: '' }
 
@@ -15,10 +16,23 @@ export default function ClienteForm() {
   const [c, setC] = useState(() => id ? VAZIO : { ...VAZIO, nome: params.get('nome') || '', whatsapp: params.get('whats') || '' })
   const [busy, setBusy] = useState(false)
   const [erro, setErro] = useState('')
+  // Na edição o formulário só aparece com os dados carregados: salvar antes sobrescreveria o registro com campos vazios.
+  const [carregado, setCarregado] = useState(!id)
+  const [erroCarga, setErroCarga] = useState(false)
+  const [tentativa, setTentativa] = useState(0)
 
   useEffect(() => {
-    if (id) getCliente(id).then((data) => setC({ ...VAZIO, ...limpaNulls(data) })).catch((e) => setErro(e.message))
-  }, [id])
+    if (!id) return
+    let ativo = true
+    getCliente(id).then((data) => {
+      if (!ativo) return
+      setC({ ...VAZIO, ...limpaNulls(data) })
+      setCarregado(true)
+    }).catch(() => { if (ativo) setErroCarga(true) })
+    return () => { ativo = false }
+  }, [id, tentativa])
+
+  const tentarDeNovo = () => { setErroCarga(false); setTentativa((n) => n + 1) }
 
   const set = (k) => (e) => setC({ ...c, [k]: e.target.value })
 
@@ -40,7 +54,15 @@ export default function ClienteForm() {
   return (
     <div className="app">
       <TopBar title={id ? 'Editar cliente' : 'Nova cliente'} />
-      <div className="content">
+<div className="content">
+        {erroCarga && (
+          <>
+            <div className="notice">Não foi possível carregar. Verifique a conexão e tente de novo.</div>
+            <button type="button" className="btn secondary" onClick={tentarDeNovo}>Tentar de novo</button>
+          </>
+        )}
+        {!carregado && !erroCarga && <SkeletonDetail />}
+        {carregado && (
         <form onSubmit={submit}>
           <div className="card">
             <div className="field">
@@ -75,6 +97,7 @@ export default function ClienteForm() {
             </div>
           </div>
         </form>
+        )}
       </div>
     </div>
   )
