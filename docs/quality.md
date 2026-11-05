@@ -30,7 +30,7 @@ Config em `eslint.config.mjs`, escopo `src/**/*.{js,jsx}` (as regras locais vêm
 
 Também ativa `@eslint/js` recommended (em `src/`, `scripts/`, `vite.config.js` e na config do ESLint). Ignorados pelo lint: `.claude`, `.superpowers`, `docs`, `dist`, `node_modules`.
 
-Uma regra inline em `eslint.config.mjs` (`jsx-uses/mark-used`, sem dependência nova) marca como usados os componentes referenciados só em JSX, porque o projeto não usa `eslint-plugin-react`. Antes dela havia 42 avisos de `no-unused-vars`, 41 deles falsos positivos (medido com `npx eslint . -f json`); o que sobra é real (`AgendamentoDetail.jsx`, linha 44).
+Uma regra inline em `eslint.config.mjs` (`jsx-uses/mark-used`, sem dependência nova) marca como usados os componentes referenciados só em JSX, porque o projeto não usa `eslint-plugin-react`. Antes dela havia 42 avisos de `no-unused-vars`, 41 deles falsos positivos (medido com `npx eslint . -f json`); o que sobrava de real foi corrigido na rodada 2 (hoje 0 avisos).
 
 Total do lint: 0 erros, 0 avisos (histórico 42 + 6, depois 1 + 6, depois 1 + 2, resolvidos na rodada 2: `ABERTOS`/`FECHADOS` em escopo de módulo, `carregar` removido do efeito, variável sem uso). Convenções de erro: falha de carga mostra `ErroCarga` (nunca estado vazio); erro de salvar usa `mensagemDeErro` e aparece dentro da barra fixa; sem `alert`/`confirm` (`useToast`/`useConfirm`). `verify:rules` imprime `ok` para as três regras locais.
 

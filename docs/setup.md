@@ -140,7 +140,7 @@ Linha de base (antes do setup) vs. final. Ambos medidos com os comandos indicado
 | `npm run build` | passa (Vite 5.4.21, PWA 16 entradas, aviso de chunk >500 kB) | passa (parte de `npm run check`, exit 0) | O aviso de chunk grande é anterior ao setup |
 | `npm run lint` | não existia | 0 erros, 0 avisos | histórico 42 + 6, depois 1 + 6, depois 1 + 2, zerado na rodada 2 (ver `docs/quality.md`) |
 | `npm run verify:rules` | não existia | 3 regras `ok` | `max-lines`, `no-direct-console`, `no-direct-data-access` |
-| `npm run check` | não existia | passa | lint + verify:rules + build |
+| `npm run check` | não existia | passa | lint + verify:rules + test + build |
 
 Números de `npm audit` (15 no total, 4 em produção, antes e depois, sem mudança): ver `docs/quality.md`, seção Dependências.
 
@@ -173,7 +173,7 @@ Subagente de contexto limpo não equivale a sessão reiniciada. Um sucesso por c
 
 ## 8. Como repetir e manter
 
-- **Checar tudo:** `npm run check`. Partes: `npm run lint`, `npm run verify:rules`, `npm run build`. Banco: `npm run check:db` (exige `.env` e rede; fora do `check`).
+- **Checar tudo:** `npm run check`. Partes: `npm run lint`, `npm run verify:rules`, `npm test`, `npm run build`. Banco: `npm run check:db` (exige `.env` e rede; fora do `check`).
 - **Atualizar skills:** `npx skills@latest add <fonte> --skill <nome> --agent claude-code --copy --yes`, depois **revisar o diff** (frontmatter `version`, `computedHash` em `skills-lock.json`, conteúdo) antes de commitar. Nunca atualizar às cegas.
 - **Dependências:** só atualizações compatíveis dentro do major. `npm outdated` mostra o que há.
 - **Repetir este setup preservando customizações:** abrir o prompt 12 do toolkit (`docs/prompts/12-existing-project-setup.md`; revisão `21b71b6` ou mais nova, revisando o que mudou), pedir ao agente que preserve `README.md`, `AGENTS.md` e `docs/`, e conferir o diff antes de commitar.
