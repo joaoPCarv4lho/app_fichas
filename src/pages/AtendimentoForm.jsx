@@ -98,40 +98,40 @@ export default function AtendimentoForm() {
         )}
         {!carregado && !erroCarga && <SkeletonDetail />}
         {carregado && (<>
-        <div className="card">
-          <div className="field">
-            <label>Tipo de serviço</label>
-            <div className="simnao">
-              <button type="button" className={tipo === 'pele' ? 'on-sim' : ''} onClick={() => setTipo('pele')}>🧖 Pele</button>
-              <button type="button" className={tipo === 'manicure' ? 'on-sim' : ''} onClick={() => setTipo('manicure')}>💅 Manicure</button>
+          <div className="card">
+            <div className="field">
+              <label>Tipo de serviço</label>
+              <div className="simnao">
+                <button type="button" className={tipo === 'pele' ? 'on-sim' : ''} onClick={() => setTipo('pele')}>🧖 Pele</button>
+                <button type="button" className={tipo === 'manicure' ? 'on-sim' : ''} onClick={() => setTipo('manicure')}>💅 Manicure</button>
+              </div>
+            </div>
+            <div className="field">
+              <label>Data</label>
+              <input type="date" value={data} onChange={(e) => setData(e.target.value)} />
+            </div>
+            <div className="field">
+              <label>Serviço realizado</label>
+              <input type="text" value={servico} onChange={(e) => setServico(e.target.value)} placeholder="Ex.: Esmaltação em gel, Limpeza profunda…" />
+            </div>
+            <div className="field">
+              <label>Observações do dia</label>
+              <textarea value={obs} onChange={(e) => setObs(e.target.value)} placeholder="Produtos usados, reações, recomendações…" />
             </div>
           </div>
-          <div className="field">
-            <label>Data</label>
-            <input type="date" value={data} onChange={(e) => setData(e.target.value)} />
-          </div>
-          <div className="field">
-            <label>Serviço realizado</label>
-            <input type="text" value={servico} onChange={(e) => setServico(e.target.value)} placeholder="Ex.: Esmaltação em gel, Limpeza profunda…" />
-          </div>
-          <div className="field">
-            <label>Observações do dia</label>
-            <textarea value={obs} onChange={(e) => setObs(e.target.value)} placeholder="Produtos usados, reações, recomendações…" />
-          </div>
-        </div>
 
-        <div className="section-title">Fotos (antes / depois)</div>
-        <div className="card">
-          <PhotoCapture photos={fotos} onChange={setFotos} />
-        </div>
-
-        {erro && <div className="error-text">{erro}</div>}
-        {editando && isAdmin && <button className="btn danger" style={{ marginTop: 12 }} onClick={excluir}>Excluir atendimento</button>}
-        <div className="actionbar">
-          <div className="actionbar-inner">
-            <button className="btn" disabled={busy} onClick={salvar}>{busy ? 'Salvando…' : 'Salvar atendimento'}</button>
+          <div className="section-title">Fotos (antes / depois)</div>
+          <div className="card">
+            <PhotoCapture photos={fotos} onChange={setFotos} />
           </div>
-        </div>
+
+          {erro && <div className="error-text">{erro}</div>}
+          {editando && isAdmin && <button className="btn danger" style={{ marginTop: 12 }} onClick={excluir}>Excluir atendimento</button>}
+          <div className="actionbar">
+            <div className="actionbar-inner">
+              <button className="btn" disabled={busy} onClick={salvar}>{busy ? 'Salvando…' : 'Salvar atendimento'}</button>
+            </div>
+          </div>
         </>)}
       </div>
     </div>

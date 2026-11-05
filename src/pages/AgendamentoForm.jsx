@@ -108,103 +108,103 @@ export default function AgendamentoForm() {
         )}
         {!carregado && !erroCarga && <SkeletonDetail />}
         {carregado && (<>
-        {/* Cliente */}
-        <div className="section-title">Cliente</div>
-        <div className="card">
-          <div className="simnao" style={{ marginBottom: 14 }}>
-            <button type="button" className={modo === 'cadastrada' ? 'on-sim' : ''} onClick={() => setModo('cadastrada')}>Cadastrada</button>
-            <button type="button" className={modo === 'avulso' ? 'on-sim' : ''} onClick={() => setModo('avulso')}>Avulsa</button>
-          </div>
-          {modo === 'cadastrada' ? (
-            <div className="field" style={{ marginBottom: 0 }}>
-              <label>Escolha a cliente</label>
-              <select value={clienteId} onChange={(e) => setClienteId(e.target.value)}>
-                <option value="">Selecione…</option>
-                {clientes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
-              </select>
-              {clientes.length === 0 && <div className="hint">Nenhuma cliente cadastrada ainda — use "Avulsa" ou cadastre em Clientes.</div>}
+          {/* Cliente */}
+          <div className="section-title">Cliente</div>
+          <div className="card">
+            <div className="simnao" style={{ marginBottom: 14 }}>
+              <button type="button" className={modo === 'cadastrada' ? 'on-sim' : ''} onClick={() => setModo('cadastrada')}>Cadastrada</button>
+              <button type="button" className={modo === 'avulso' ? 'on-sim' : ''} onClick={() => setModo('avulso')}>Avulsa</button>
             </div>
-          ) : (
-            <>
-              <div className="field">
-                <label>Nome</label>
-                <input type="text" value={nomeAvulso} onChange={(e) => setNomeAvulso(e.target.value)} placeholder="Nome da cliente" />
+            {modo === 'cadastrada' ? (
+              <div className="field" style={{ marginBottom: 0 }}>
+                <label>Escolha a cliente</label>
+                <select value={clienteId} onChange={(e) => setClienteId(e.target.value)}>
+                  <option value="">Selecione…</option>
+                  {clientes.map((c) => <option key={c.id} value={c.id}>{c.nome}</option>)}
+                </select>
+                {clientes.length === 0 && <div className="hint">Nenhuma cliente cadastrada ainda — use "Avulsa" ou cadastre em Clientes.</div>}
+              </div>
+            ) : (
+              <>
+                <div className="field">
+                  <label>Nome</label>
+                  <input type="text" value={nomeAvulso} onChange={(e) => setNomeAvulso(e.target.value)} placeholder="Nome da cliente" />
+                </div>
+                <div className="field" style={{ marginBottom: 0 }}>
+                  <label>WhatsApp (opcional)</label>
+                  <input type="tel" inputMode="tel" value={telAvulso} onChange={(e) => setTelAvulso(e.target.value)} placeholder="(00) 00000-0000" />
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Serviço */}
+          <div className="section-title">Serviço</div>
+          <div className="card">
+            <div className="field">
+              <label>Tipo</label>
+              <div className="simnao">
+                <button type="button" className={tipo === 'pele' ? 'on-sim' : ''} onClick={() => setTipo(tipo === 'pele' ? '' : 'pele')}>🧖 Pele</button>
+                <button type="button" className={tipo === 'manicure' ? 'on-sim' : ''} onClick={() => setTipo(tipo === 'manicure' ? '' : 'manicure')}>💅 Manicure</button>
+              </div>
+            </div>
+            <div className="field" style={{ marginBottom: 0 }}>
+              <label>Descrição (opcional)</label>
+              <input type="text" value={servico} onChange={(e) => setServico(e.target.value)} placeholder="Ex.: Esmaltação em gel" />
+            </div>
+          </div>
+
+          {/* Horário */}
+          <div className="section-title">Horário</div>
+          <div className="card">
+            <div className="timegrid">
+              <div className="field" style={{ marginBottom: 0 }}>
+                <label>Data</label>
+                <input type="date" value={data} onChange={(e) => setData(e.target.value)} />
               </div>
               <div className="field" style={{ marginBottom: 0 }}>
-                <label>WhatsApp (opcional)</label>
-                <input type="tel" inputMode="tel" value={telAvulso} onChange={(e) => setTelAvulso(e.target.value)} placeholder="(00) 00000-0000" />
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Serviço */}
-        <div className="section-title">Serviço</div>
-        <div className="card">
-          <div className="field">
-            <label>Tipo</label>
-            <div className="simnao">
-              <button type="button" className={tipo === 'pele' ? 'on-sim' : ''} onClick={() => setTipo(tipo === 'pele' ? '' : 'pele')}>🧖 Pele</button>
-              <button type="button" className={tipo === 'manicure' ? 'on-sim' : ''} onClick={() => setTipo(tipo === 'manicure' ? '' : 'manicure')}>💅 Manicure</button>
-            </div>
-          </div>
-          <div className="field" style={{ marginBottom: 0 }}>
-            <label>Descrição (opcional)</label>
-            <input type="text" value={servico} onChange={(e) => setServico(e.target.value)} placeholder="Ex.: Esmaltação em gel" />
-          </div>
-        </div>
-
-        {/* Horário */}
-        <div className="section-title">Horário</div>
-        <div className="card">
-          <div className="timegrid">
-            <div className="field" style={{ marginBottom: 0 }}>
-              <label>Data</label>
-              <input type="date" value={data} onChange={(e) => setData(e.target.value)} />
-            </div>
-            <div className="field" style={{ marginBottom: 0 }}>
-              <label>Início</label>
-              <div className="timesel">
-                <select aria-label="Hora" value={hh} onChange={(e) => setHora(`${e.target.value}:${mm}`)}>
-                  {HORAS.map((h) => <option key={h} value={h}>{h}</option>)}
-                </select>
-                <span>:</span>
-                <select aria-label="Minuto" value={mm} onChange={(e) => setHora(`${hh}:${e.target.value}`)}>
-                  {minutos.map((m) => <option key={m} value={m}>{m}</option>)}
-                </select>
+                <label>Início</label>
+                <div className="timesel">
+                  <select aria-label="Hora" value={hh} onChange={(e) => setHora(`${e.target.value}:${mm}`)}>
+                    {HORAS.map((h) => <option key={h} value={h}>{h}</option>)}
+                  </select>
+                  <span>:</span>
+                  <select aria-label="Minuto" value={mm} onChange={(e) => setHora(`${hh}:${e.target.value}`)}>
+                    {minutos.map((m) => <option key={m} value={m}>{m}</option>)}
+                  </select>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="field" style={{ marginBottom: 0 }}>
-            <label>Duração</label>
-            <div className="chips" style={{ marginBottom: 10 }}>
-              {DURACOES.map((d) => (
-                <button type="button" key={d} className={'chip' + (Number(duracao) === d ? ' on' : '')} onClick={() => setDuracao(d)}>{d} min</button>
-              ))}
+            <div className="field" style={{ marginBottom: 0 }}>
+              <label>Duração</label>
+              <div className="chips" style={{ marginBottom: 10 }}>
+                {DURACOES.map((d) => (
+                  <button type="button" key={d} className={'chip' + (Number(duracao) === d ? ' on' : '')} onClick={() => setDuracao(d)}>{d} min</button>
+                ))}
+              </div>
+              <div className="stepper">
+                <button type="button" onClick={() => setDur(Number(duracao) - 5)} aria-label="Diminuir 5 min">−</button>
+                <div className="val">{duracao}<span>min</span></div>
+                <button type="button" onClick={() => setDur(Number(duracao) + 5)} aria-label="Aumentar 5 min">+</button>
+              </div>
             </div>
-            <div className="stepper">
-              <button type="button" onClick={() => setDur(Number(duracao) - 5)} aria-label="Diminuir 5 min">−</button>
-              <div className="val">{duracao}<span>min</span></div>
-              <button type="button" onClick={() => setDur(Number(duracao) + 5)} aria-label="Aumentar 5 min">+</button>
+            {conflito && <div className="notice" style={{ marginTop: 14 }}>⚠️ Já existe outro horário nesse intervalo. Você pode salvar mesmo assim.</div>}
+          </div>
+
+          {/* Observações */}
+          <div className="section-title">Observações</div>
+          <div className="card">
+            <textarea className="notes" value={obs} onChange={(e) => setObs(e.target.value)}
+              placeholder="Anotações do agendamento — produtos, preferências, alertas…" />
+          </div>
+
+          {erro && <div className="error-text">{erro}</div>}
+          <div className="actionbar">
+            <div className="actionbar-inner">
+              <button className="btn" disabled={busy} onClick={salvar}>{busy ? 'Salvando…' : 'Salvar'}</button>
             </div>
           </div>
-          {conflito && <div className="notice" style={{ marginTop: 14 }}>⚠️ Já existe outro horário nesse intervalo. Você pode salvar mesmo assim.</div>}
-        </div>
-
-        {/* Observações */}
-        <div className="section-title">Observações</div>
-        <div className="card">
-          <textarea className="notes" value={obs} onChange={(e) => setObs(e.target.value)}
-            placeholder="Anotações do agendamento — produtos, preferências, alertas…" />
-        </div>
-
-        {erro && <div className="error-text">{erro}</div>}
-        <div className="actionbar">
-          <div className="actionbar-inner">
-            <button className="btn" disabled={busy} onClick={salvar}>{busy ? 'Salvando…' : 'Salvar'}</button>
-          </div>
-        </div>
         </>)}
       </div>
     </div>

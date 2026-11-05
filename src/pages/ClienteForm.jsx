@@ -54,7 +54,7 @@ export default function ClienteForm() {
   return (
     <div className="app">
       <TopBar title={id ? 'Editar cliente' : 'Nova cliente'} />
-<div className="content">
+      <div className="content">
         {erroCarga && (
           <>
             <div className="notice">Não foi possível carregar. Verifique a conexão e tente de novo.</div>
@@ -63,40 +63,40 @@ export default function ClienteForm() {
         )}
         {!carregado && !erroCarga && <SkeletonDetail />}
         {carregado && (
-        <form onSubmit={submit}>
-          <div className="card">
-            <div className="field">
-              <label>Nome completo *</label>
-              <input type="text" value={c.nome} onChange={set('nome')} required />
+          <form onSubmit={submit}>
+            <div className="card">
+              <div className="field">
+                <label>Nome completo *</label>
+                <input type="text" value={c.nome} onChange={set('nome')} required />
+              </div>
+              <div className="field">
+                <label>Data de nascimento</label>
+                <input type="date" value={c.nascimento || ''} onChange={set('nascimento')} />
+              </div>
+              <div className="field">
+                <label>WhatsApp</label>
+                <input type="tel" inputMode="tel" value={c.whatsapp} onChange={set('whatsapp')} placeholder="(00) 00000-0000" />
+              </div>
+              <div className="field">
+                <label>E-mail</label>
+                <input type="email" value={c.email} onChange={set('email')} />
+              </div>
+              <div className="field">
+                <label>Como conheceu</label>
+                <input type="text" value={c.como_conheceu} onChange={set('como_conheceu')} placeholder="Instagram, indicação…" />
+              </div>
+              <div className="field">
+                <label>Observações</label>
+                <textarea value={c.observacoes} onChange={set('observacoes')} />
+              </div>
             </div>
-            <div className="field">
-              <label>Data de nascimento</label>
-              <input type="date" value={c.nascimento || ''} onChange={set('nascimento')} />
+            {erro && <div className="error-text">{erro}</div>}
+            <div className="actionbar">
+              <div className="actionbar-inner">
+                <button className="btn" disabled={busy}>{busy ? 'Salvando…' : 'Salvar'}</button>
+              </div>
             </div>
-            <div className="field">
-              <label>WhatsApp</label>
-              <input type="tel" inputMode="tel" value={c.whatsapp} onChange={set('whatsapp')} placeholder="(00) 00000-0000" />
-            </div>
-            <div className="field">
-              <label>E-mail</label>
-              <input type="email" value={c.email} onChange={set('email')} />
-            </div>
-            <div className="field">
-              <label>Como conheceu</label>
-              <input type="text" value={c.como_conheceu} onChange={set('como_conheceu')} placeholder="Instagram, indicação…" />
-            </div>
-            <div className="field">
-              <label>Observações</label>
-              <textarea value={c.observacoes} onChange={set('observacoes')} />
-            </div>
-          </div>
-          {erro && <div className="error-text">{erro}</div>}
-          <div className="actionbar">
-            <div className="actionbar-inner">
-              <button className="btn" disabled={busy}>{busy ? 'Salvando…' : 'Salvar'}</button>
-            </div>
-          </div>
-        </form>
+          </form>
         )}
       </div>
     </div>
