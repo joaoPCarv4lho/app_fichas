@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js'
+import { exigeLinhas } from './linhas.js'
 
 async function uid() {
   const { data } = await supabase.auth.getUser()
@@ -28,8 +29,9 @@ export async function saveCliente(cliente) {
 }
 
 export async function deleteCliente(id) {
-  const { error } = await supabase.from('clientes').delete().eq('id', id)
+  const { data, error } = await supabase.from('clientes').delete().eq('id', id).select('id')
   if (error) throw error
+  exigeLinhas(data)
 }
 
 // ---------- Anamneses ----------
@@ -80,8 +82,9 @@ export async function saveAtendimento(at) {
 }
 
 export async function deleteAtendimento(id) {
-  const { error } = await supabase.from('atendimentos').delete().eq('id', id)
+  const { data, error } = await supabase.from('atendimentos').delete().eq('id', id).select('id')
   if (error) throw error
+  exigeLinhas(data)
 }
 
 // ---------- Agendamentos ----------
@@ -113,19 +116,22 @@ export async function saveAgendamento(ag) {
 }
 
 export async function setStatusAgendamento(id, status) {
-  const { error } = await supabase.from('agendamentos').update({ status }).eq('id', id)
+  const { data, error } = await supabase.from('agendamentos').update({ status }).eq('id', id).select('id')
   if (error) throw error
+  exigeLinhas(data)
 }
 
 // Atualização parcial (ex.: vincular atendimento + marcar realizado)
 export async function patchAgendamento(id, fields) {
-  const { error } = await supabase.from('agendamentos').update(fields).eq('id', id)
+  const { data, error } = await supabase.from('agendamentos').update(fields).eq('id', id).select('id')
   if (error) throw error
+  exigeLinhas(data)
 }
 
 export async function deleteAgendamento(id) {
-  const { error } = await supabase.from('agendamentos').delete().eq('id', id)
+  const { data, error } = await supabase.from('agendamentos').delete().eq('id', id).select('id')
   if (error) throw error
+  exigeLinhas(data)
 }
 
 // ---------- Fotos (Storage) ----------

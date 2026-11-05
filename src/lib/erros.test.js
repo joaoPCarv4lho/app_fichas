@@ -47,3 +47,6 @@ test('registra o erro no console', (t) => {
 test('registro não encontrado: PGRST116', (t) => {
   assert.equal(msg(t, { code: 'PGRST116', message: 'x' }), 'Registro não encontrado.')
 })
+test('nenhuma linha afetada: SEM_LINHAS', (t) => {
+  assert.match(msg(t, { code: 'SEM_LINHAS', message: 'x' }), /não tem permissão ou o registro não existe mais/)
+})
