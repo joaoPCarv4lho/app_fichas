@@ -13,7 +13,7 @@ Estado verificado em 2026-11-05 (Node 24, Windows). Cada número abaixo vem de u
 | `npm run check` | `lint` + `verify:rules` + `test` + `build`, nessa ordem. Não publica nem toca produção. Resultado em 2026-11-05: passou. |
 | `npm run check:db` | Valida `.env` e conexão com o Supabase. Exige `.env` e rede; **não** faz parte de `check`. |
 
-**Testes:** só lógica pura de `src/lib` (hoje `resposta.js`), via `npm test`. Componentes e fluxos de UI não têm teste automatizado (exigem login); sem framework adicional (YAGNI).
+**Testes:** só lógica pura de `src/lib` (hoje `resposta.js` e `agenda.js`: datas locais, conflito de horário, idade, meia-noite; 18 testes), via `npm test`. Componentes e fluxos de UI não têm teste automatizado (exigem login); sem framework adicional (YAGNI).
 
 ## Regras adotadas
 
