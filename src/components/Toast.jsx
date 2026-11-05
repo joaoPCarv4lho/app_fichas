@@ -11,15 +11,20 @@ export function ToastProvider({ children }) {
     timers.current.forEach(clearTimeout)
     timers.current = []
     setToast({ msg, ok, leaving: false })
-    timers.current.push(setTimeout(() => setToast((t) => t && { ...t, leaving: true }), 2200))
-    timers.current.push(setTimeout(() => setToast(null), 2500))
+    const dur = ok ? 2200 : 5000 // erro fica mais tempo na tela
+    timers.current.push(setTimeout(() => setToast((t) => t && { ...t, leaving: true }), dur))
+    timers.current.push(setTimeout(() => setToast(null), dur + 300))
   }, [])
 
   return (
     <ToastContext.Provider value={show}>
       {children}
       {toast && (
-        <div className={`toast ${toast.ok ? 'ok' : ''} ${toast.leaving ? 'leaving' : ''}`} role="status" aria-live="polite">
+        <div
+          className={`toast ${toast.ok ? 'ok' : 'err'} ${toast.leaving ? 'leaving' : ''}`}
+          role={toast.ok ? 'status' : 'alert'}
+          aria-live={toast.ok ? 'polite' : 'assertive'}
+        >
           {toast.msg}
         </div>
       )}
