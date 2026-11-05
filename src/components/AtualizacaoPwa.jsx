@@ -8,7 +8,7 @@ export default function AtualizacaoPwa() {
   if (!precisaAtualizar()) return null
   return (
     <div className="pwa-update" role="status">
-      <span>Nova versão disponível.</span>
+      <span>Nova versão disponível. Salve o que estiver aberto antes de atualizar.</span>
       <button type="button" className="btn sm" onClick={atualizarAgora}>Atualizar agora</button>
       <button type="button" className="btn ghost sm" onClick={dispensar}>Depois</button>
     </div>
