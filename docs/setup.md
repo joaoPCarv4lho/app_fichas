@@ -9,7 +9,7 @@ Estados usados: **validado** (comando ou artefato observado), **configurado sem 
 - **Data:** 2026-11-05.
 - **Toolkit:** `soumatheusgomes/vibe-coding-toolkit`, revisão `21b71b68679c11184f49c23168852014bf6dde8b` (2026-10-29). Todos os guias, prompts e templates vêm dessa revisão. Procedimento: prompt 12 do toolkit (`docs/prompts/12-existing-project-setup.md` na revisão citada).
 - **Cliente:** Claude Code (Windows 11). Codex não é usado.
-- **Runtime:** Node 24.15.0, npm 12.2.1 (`node -v`, `npm -v`).
+- **Runtime:** Node 24.15.0, npm 12.2.1 (`node -v`, `npm -v`); o projeto declara Node 20+.
 - **Modelos:** o projeto não fixa modelo. Sessão principal: Sonnet 5.5 (ID observado). Subagentes despachados por alias (sonnet, opus); o ID resolvido não foi observado.
 - **Política de subagentes:** modelo leve para busca e tarefas mecânicas; capacidade maior para segurança e dados; implementadores serializados (um escritor por arquivo, coordenador cuida de lockfile e config compartilhada). Texto curto em `AGENTS.md`.
 - **Custo:** nenhum valor foi medido nem estimado; nenhum custo é afirmado.
@@ -207,6 +207,7 @@ Próxima ação proposta para cada um (todas dependem de o usuário aprovar esco
 2. **Medium, fotos de saúde ficam no Storage** após excluir cliente ou foto: tarefa própria para apagar objetos junto da exclusão e limpar órfãos (impacto LGPD; mexe em `db.js` e telas).
 3. **Medium, re-salvar a anamnese regrava termo atual com assinatura antiga:** tarefa própria para atualizar consentimento só quando a assinatura mudar.
 4. **Low (PostgreSQL e segurança):** referência cross-tenant de `cliente_id`, índices em FKs, `auth.uid()` sem `(select ...)`, checks de integridade, PIN sem limite de tentativas, `jspdf` e `react-router` teóricos, `serialize-javascript`/`source-map-js` só no build. Agrupar por tema e priorizar com o usuário.
+5a. **Hospedagem (rodada 4):** cabeçalhos de segurança, cache e rewrite estreito estão no `vercel.json` (não validados em produção por mim; o controlador valida em deploy de prévia). Pendências: promover a CSP de `Report-Only` a enforcada após teste logado com DevTools aberto; o PIN é trava de conveniência, não segurança; remoto git privado é decisão do usuário.
 5. **Propostas confirmadas pelo revisor da Task 4 (só propostas, nada alterado):** `src/pages/AtendimentoForm.jsx:69-71` remove as fotos do Storage **antes** de apagar o atendimento no banco, então as fotos se perdem se a exclusão falhar (inverter a ordem ou tratar falha); ~~`src/pages/Configuracoes.jsx:42` remove o PIN sem pedir o PIN atual~~ (corrigido: pede o PIN atual). Pendência: `PinLock` sem limite de tentativas; hash SHA-256 de 4 dígitos não protege contra extração do localStorage.
 6. **Hipóteses abertas, só o usuário confirma no painel:** cadastro público do Supabase Auth ligado ou não; (`pg_policies` já conferido, ver item 1); validade do JWT e política de senha.
 

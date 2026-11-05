@@ -3,14 +3,14 @@
 ## Produto e stack
 
 - Produto e escopo: `PRODUCT.md`.
-- Stack: React 18, Vite 5, react-router-dom 6, Supabase (`@supabase/supabase-js`), `vite-plugin-pwa`, jsPDF. JavaScript puro (JSX), npm, Node 24, Windows.
+- Stack: React 18, Vite 5, react-router-dom 6, Supabase (`@supabase/supabase-js`), `vite-plugin-pwa`, jsPDF. JavaScript puro (JSX), npm, Node 20+ (testado no 24), Windows.
 - Preparação e validações: `docs/onboarding.md`, `docs/setup.md`.
 
 ## Comandos canônicos
 
 Use só comandos que existem; não invente scripts.
 
-- Instalar: `npm install`
+- Instalar: `npm ci` (ou `npm install` para mudar dependências)
 - Desenvolver: `npm run dev`
 - Build: `npm run build`
 - Preview do build: `npm run preview`
@@ -19,6 +19,7 @@ Use só comandos que existem; não invente scripts.
 - Regras locais: `npm run verify:rules`
 - Testes (lógica de `src/lib`): `npm test`
 - Verificação combinada: `npm run check` (lint + verify:rules + test + build)
+- Deploy: `npm run deploy` só imprime o plano; `npm run deploy -- --prod` publica (só com autorização)
 
 ## Acordos de trabalho
 
@@ -73,6 +74,6 @@ Use só comandos que existem; não invente scripts.
 - Acesso ao Supabase passa por `src/lib/db.js`; `upsert` sempre leva `user_id`.
 - Fotos: bucket `fotos`, pasta = `user_id` (a RLS depende disso).
 - SQL do banco é manual (SQL Editor do Supabase) em `supabase/*.sql`; não rode migração por conta própria.
-- Deploy manual via Vercel CLI: rode `npm run check` antes; depois `npm run build` → `cp vercel.json dist/` → `cd dist && vercel deploy --prod --yes`. Exige autorização do usuário; nunca por conta própria.
+- Deploy manual: `npm run deploy -- --prod` (faz `check`, copia `vercel.json`, `vercel link` e `deploy --prod`). Exige autorização explícita do usuário; nunca por conta própria.
 - Erros mostrados à usuária passam por `mensagemDeErro` (`src/lib/erros.js`); nunca `error.message` cru; sem `alert`/`confirm` nativos (use `useConfirm` e `useToast`).
 - Nunca versionar `.env`, chaves ou tokens.

@@ -59,8 +59,8 @@ no Supabase e desabilite o signup. Para dar acesso total a um deles, defina
 ## Publicar (colocar no ar de graça)
 
 O deploy é manual pela Vercel CLI (o projeto não tem repositório remoto):
-`npm run build`, copiar `vercel.json` para `dist/` e rodar
-`vercel deploy --prod --yes` dentro de `dist`. As variáveis `VITE_SUPABASE_URL`
+`npm run deploy -- --prod` (roda `npm run check`, copia `vercel.json` para
+`dist/` e faz o deploy; sem `--prod` só mostra o plano). As variáveis `VITE_SUPABASE_URL`
 e `VITE_SUPABASE_ANON_KEY` entram no build via `.env`. Passo a passo em
 [`docs/onboarding.md`](docs/onboarding.md).
 

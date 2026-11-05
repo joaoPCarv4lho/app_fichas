@@ -1,6 +1,6 @@
 # Qualidade
 
-Estado verificado em 2026-11-05 (Node 24, Windows). Cada número abaixo vem de um comando rodado nesta data; o que não foi observado está marcado como pendente.
+Estado verificado em 2026-11-05 (Node 24, Windows; o projeto aceita Node 20+). Cada número abaixo vem de um comando rodado nesta data; o que não foi observado está marcado como pendente.
 
 ## Comandos
 
@@ -84,4 +84,4 @@ Usar `docs/prompts/security-review.md` (somente leitura, sem correções automá
 | Linha de base (antes) | 15 (3 low, 8 moderate, 3 high, 1 critical) | 4 (2 moderate, 1 high, 1 critical) |
 | Depois das devDependencies de lint | 15 (3 low, 8 moderate, 3 high, 1 critical) | 4 (2 moderate, 1 high, 1 critical) |
 
-Sem mudança: as devDependencies adicionadas (ESLint e plugins) não introduziram vulnerabilidade nem corrigiram alguma. As de produção são `jspdf` 2.5.2 e `react-router-dom` 6.30.6 (e dependências). Pela revisão de segurança, o alcance é teórico no uso atual (sem `doc.html()` no jsPDF; SPA sem SSR). Atualizar para `jspdf` 4.x e `react-router-dom` 7.x são majors e ficam para tarefa própria com validação do PDF e das rotas. As demais (`serialize-javascript`, `source-map-js`) afetam só o build.
+Sem mudança: as devDependencies adicionadas (ESLint e plugins) não introduziram vulnerabilidade nem corrigiram alguma. As de produção são `jspdf` 2.5.2 e `react-router-dom` 6.30.6 (e dependências). Pela revisão de segurança, o alcance é teórico no uso atual (sem `doc.html()` no jsPDF; SPA sem SSR). `@supabase/supabase-js` foi atualizado dentro do ^2 (2.116.0 para 2.119.0). Atualizar para `jspdf` 4.x (adiado: major e inalcançável hoje) e `react-router-dom` 7.x são majors e ficam para tarefa própria com validação do PDF e das rotas. As demais (`serialize-javascript`, `source-map-js`) afetam só o build.

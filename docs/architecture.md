@@ -7,9 +7,9 @@ Versões de `package.json` (instaladas conforme `package-lock.json`, `lockfileVe
 - React 18.3 e react-dom 18.3
 - react-router-dom 6.30
 - Vite 5.4 com `@vitejs/plugin-react` 4.7 e `vite-plugin-pwa` 0.20 (`generateSW`)
-- `@supabase/supabase-js` 2.116 (banco, auth e Storage)
+- `@supabase/supabase-js` 2.119 (banco, auth e Storage)
 - jsPDF 2.5 (PDF da ficha)
-- Node 24, npm 12; JavaScript puro, sem TypeScript; testes automatizados só para lógica pura de `src/lib` (`npm test`).
+- Node 20+ (testado no 24), npm 12; JavaScript puro, sem TypeScript; testes automatizados só para lógica pura de `src/lib` (`npm test`).
 
 ## Mapa do código
 
@@ -27,11 +27,19 @@ src/
   styles.css               estilos e tokens
 supabase/                  schema.sql, roles.sql, agenda.sql, agenda-link.sql
 scripts/check-db.mjs       valida .env e banco (npm run check:db)
+scripts/deploy.mjs         deploy manual (npm run deploy; só age com --prod)
 public/                    ícones do PWA e favicon
-vercel.json                reescrita de rotas para /index.html
+vercel.json                rewrite SPA, cabeçalhos de segurança e cache
 ```
 
 Rotas (em `src/App.jsx`): `/` (Agenda), `/agendamento/novo`, `/agendamento/:id`, `/agendamento/:id/editar`, `/clientes`, `/cliente/novo`, `/cliente/:id`, `/cliente/:id/editar`, `/cliente/:id/anamnese/:tipo`, `/cliente/:id/atendimento/novo`, `/cliente/:id/atendimento/:atId`, `/config`.
+
+## Hospedagem (vercel.json)
+
+- Rewrite SPA só para caminhos sem extensão e fora de `/assets/`: `/cliente/abc` serve `index.html`; arquivo inexistente (`/foo.png`, `/assets/x.js`) dá 404 em vez de HTML.
+- Cabeçalhos em todas as rotas: `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Permissions-Policy` (só câmera para o próprio site), `Strict-Transport-Security`.
+- CSP apenas em modo relatório (`Content-Security-Policy-Report-Only`): não bloqueia nada. Promover a `Content-Security-Policy` fica pendente até testar o app logado com o DevTools aberto e conferir que não há violação.
+- Cache: `sw.js`, `index.html`, `registerSW.js` e `manifest.webmanifest` com `max-age=0, must-revalidate`; `/assets/*` com `max-age=31536000, immutable`.
 
 ## Fluxo de dados
 
