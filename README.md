@@ -58,13 +58,14 @@ no Supabase e desabilite o signup. Para dar acesso total a um deles, defina
 
 ## Publicar (colocar no ar de graça)
 
-1. Suba o projeto para o GitHub.
-2. Em [vercel.com](https://vercel.com), importe o repositório.
-3. Em **Environment Variables**, adicione `VITE_SUPABASE_URL` e
-   `VITE_SUPABASE_ANON_KEY`.
-4. Deploy. Você recebe um endereço tipo `seuapp.vercel.app`.
-5. No celular, abra esse endereço no navegador e use **"Adicionar à tela de
-   início"** para instalar como app.
+O deploy é manual pela Vercel CLI (o projeto não tem repositório remoto):
+`npm run build`, copiar `vercel.json` para `dist/` e rodar
+`vercel deploy --prod --yes` dentro de `dist`. As variáveis `VITE_SUPABASE_URL`
+e `VITE_SUPABASE_ANON_KEY` entram no build via `.env`. Passo a passo em
+[`docs/onboarding.md`](docs/onboarding.md).
+
+No celular, abra o endereço no navegador e use **"Adicionar à tela de
+início"** para instalar como app.
 
 ---
 

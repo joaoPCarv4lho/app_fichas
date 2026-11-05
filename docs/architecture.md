@@ -49,7 +49,7 @@ UI (páginas) → `src/lib/db.js` → Supabase. As páginas chamam funções com
 - `clientes`: nome, nascimento, whatsapp, e-mail, como_conheceu, observacoes.
 - `anamneses`: uma por cliente e tipo (`unique (cliente_id, tipo)`), `respostas` em jsonb, consentimento (texto, assinatura em data URL, data).
 - `atendimentos`: por visita, `fotos` em jsonb (`path` + `momento` antes/depois), `data`.
-- `agendamentos`: data, hora, `duracao_min`, status, cliente ou nome/telefone avulsos, `atendimento_id` opcional.
+- `agendamentos`: data, hora, `duracao_min`, status, cliente ou nome/telefone avulsos, `atendimento_id` opcional. `cliente_id` é `on delete set null` (excluir a cliente mantém o agendamento).
 - Todas têm `user_id not null` com RLS `auth.uid() = user_id`. Em clientes, anamneses e atendimentos, excluir exige `app_metadata.role = 'admin'`; em agendamentos o dono pode excluir.
 - Storage: bucket privado `fotos`; caminho `<user_id>/<uuid>.jpg`; as políticas comparam a primeira pasta com `auth.uid()`. As fotos são lidas por URL assinada.
 

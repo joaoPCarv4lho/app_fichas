@@ -10,8 +10,8 @@ Uma profissional de estética (atuação solo) atende **limpeza de pele/dermapla
 - A profissional **preenche** a ficha; a cliente apenas **assina** na tela (canvas).
 - Exatamente **dois logins**, sem cadastro público (o login é só e-mail + senha). Dados **separados por usuário** (RLS `auth.uid() = user_id`).
 - Papel em `app_metadata.role`:
-  - `admin`: acesso total, inclusive excluir clientes e atendimentos e abrir Configurações.
-  - sem papel (profissional): cria e edita; **não** exclui cliente nem atendimento; **pode** excluir agendamento.
+  - `admin`: acesso total, inclusive excluir clientes e atendimentos; só ele vê o card da conta em Configurações.
+  - sem papel (profissional): cria e edita; **não** exclui cliente nem atendimento; **pode** excluir agendamento; em Configurações ("Segurança") vê só PIN, instalação e sair.
 - **Trava por PIN** local (hash em `localStorage`) ao abrir o app.
 
 ## Fluxos
@@ -19,7 +19,7 @@ Uma profissional de estética (atuação solo) atende **limpeza de pele/dermapla
 - **Clientes**: cadastro e busca.
 - **Anamnese "viva"** por cliente e por tipo (`pele`, `manicure`), sempre editável; só salva com a assinatura da cliente no termo de consentimento LGPD. Perguntas definidas em `src/data/fichaSchemas.js`.
 - **Atendimentos** por visita, com fotos antes/depois.
-- **Agenda interna** (só a profissional registra): abas Dia/Próximos; cliente cadastrada ou avulsa (nome + telefone); status `agendado`, `confirmado`, `realizado`, `cancelado`, `faltou`; aviso de conflito de horário não bloqueante. "Registrar atendimento" a partir de um agendamento o marca como realizado e o vincula ao atendimento.
+- **Agenda interna** (só a profissional registra): abas Dia/Próximos; cliente cadastrada ou avulsa (nome + telefone); status `agendado`, `confirmado`, `realizado`, `cancelado`, `faltou`; aviso de conflito de horário não bloqueante. "Registrar atendimento" abre o formulário de atendimento com o agendamento associado; ao **salvar** o atendimento, o agendamento passa a `realizado` e fica vinculado a ele.
 - **Exportar a ficha em PDF**.
 - **Instalação**: card de instalação em Configurações (botão no Android, instruções no iPhone).
 
