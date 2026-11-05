@@ -261,6 +261,16 @@ a { color: var(--brand-strong); }
   *, .content, .auth-box, .toast { animation: none !important; transition: none !important; }
 }
 
+/* aviso de nova versão do PWA (topo; não cobre actionbar nem tabbar) */
+.pwa-update {
+  position: fixed; top: calc(var(--sat) + 8px); left: 50%; transform: translateX(-50%); z-index: 30;
+  width: min(calc(100vw - 32px), 588px); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--line-strong);
+  border-radius: var(--r-md); box-shadow: var(--sh-3); padding: 10px 12px; font-size: 14px; font-weight: 600;
+}
+.pwa-update span { flex: 1 1 100%; }
+.pwa-update .btn { flex: 1; }
+
 /* ---------- Barra de abas (bottom nav) ---------- */
 .tabbar {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 18;
