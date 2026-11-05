@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import TopBar from '../components/TopBar.jsx'
 import PhotoCapture from '../components/PhotoCapture.jsx'
-import { getAtendimento, saveAtendimento, deleteAtendimento, uploadFoto, signedUrl, removeFoto, patchAgendamento } from '../lib/db.js'
+import { getAtendimento, saveAtendimento, deleteAtendimento, uploadFoto, signedUrl, removerFotos, patchAgendamento } from '../lib/db.js'
 import { SkeletonDetail } from '../components/Skeleton.jsx'
 import ErroCarga from '../components/ErroCarga.jsx'
 import { mensagemDeErro } from '../lib/erros.js'
@@ -24,6 +24,8 @@ export default function AtendimentoForm() {
   const [novoId] = useState(() => crypto.randomUUID())
   // fotos já enviadas nesta tela (key -> {path,momento}): o retry não sobe a mesma foto de novo
   const enviadas = useRef(new Map())
+  // paths salvos ao abrir: os que a usuária removeu do formulário são apagados do Storage após salvar
+  const originais = useRef([])
 
   const [tipo, setTipo] = useState(params.get('tipo') === 'manicure' ? 'manicure' : 'pele')
   const [data, setData] = useState(hojeISO())
@@ -49,6 +51,7 @@ export default function AtendimentoForm() {
       if (!ativo) return
       setTipo(at.tipo); setData(at.data); setServico(at.servico || ''); setObs(at.observacoes || '')
       setFotos(carregadas)
+      originais.current = (at.fotos || []).map((f) => f.path)
       setCarregado(true)
     }).catch((e) => { if (ativo) setErroCarga(e || new Error('falha')) })
     return () => { ativo = false }
@@ -75,6 +78,7 @@ export default function AtendimentoForm() {
         observacoes: obs.trim(),
         fotos: fotosFinais,
       })
+      await removerFotos(originais.current.filter((p) => !fotosFinais.some((f) => f.path === p)))
       // veio de um agendamento? fecha o ciclo: vincula + marca realizado
       const agId = params.get('agendamento')
       if (agId && !editando) {
@@ -92,8 +96,8 @@ export default function AtendimentoForm() {
     const ok = await confirmar({ titulo: 'Excluir este atendimento?', texto: 'Esta ação não pode ser desfeita.', ok: 'Excluir', perigo: true })
     if (!ok) return
     try {
-      for (const f of fotos) if (f.path) await removeFoto(f.path)
-      await deleteAtendimento(atId)
+      await deleteAtendimento(atId) // linha primeiro: se falhar, as fotos continuam valendo
+      await removerFotos(fotos.filter((f) => f.path).map((f) => f.path))
       navigate(`/cliente/${id}`, { replace: true })
     } catch (e) { toast(mensagemDeErro(e), false) }
   }

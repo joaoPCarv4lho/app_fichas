@@ -31,7 +31,12 @@ export async function saveCliente(cliente) {
   return data
 }
 
-export async function deleteCliente(id) {
+export async function deleteCliente(cliente) {
+  const id = cliente.id
+  // cliente_id dos agendamentos vira null ao excluir: copia a identificação antes (0 linhas é normal)
+  const { error: e0 } = await supabase.from('agendamentos')
+    .update({ nome_avulso: cliente.nome, telefone_avulso: cliente.whatsapp || null }).eq('cliente_id', id)
+  if (e0) throw e0
   const { data, error } = await supabase.from('clientes').delete().eq('id', id).select('id')
   if (error) throw error
   exigeLinhas(data)
@@ -152,6 +157,11 @@ export async function signedUrl(path, expires = 3600) {
   return data.signedUrl
 }
 
-export async function removeFoto(path) {
-  await supabase.storage.from('fotos').remove([path])
+// Melhor esforço: roda depois da linha já salva/excluída, então nunca lança (só registra).
+export async function removerFotos(paths) {
+  if (!paths.length) return
+  try {
+    const { error } = await supabase.storage.from('fotos').remove(paths)
+    if (error) console.error(error)
+  } catch (e) { console.error(e) }
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import TopBar from '../components/TopBar.jsx'
-import { getCliente, getAnamneses, listAtendimentos, deleteCliente } from '../lib/db.js'
+import { getCliente, getAnamneses, listAtendimentos, deleteCliente, removerFotos } from '../lib/db.js'
 import { FICHAS } from '../data/fichaSchemas.js'
 import { gerarPdfAnamnese } from '../lib/pdf.js'
 import { hojeISO, idadeDe } from '../lib/agenda.js'
@@ -39,7 +39,12 @@ export default function ClienteDetail() {
   const excluir = async () => {
     const ok = await confirmar({ titulo: `Excluir ${cliente.nome}?`, texto: 'Todos os seus registros serão excluídos. Esta ação não pode ser desfeita.', ok: 'Excluir', perigo: true })
     if (!ok) return
-    try { await deleteCliente(id); navigate('/', { replace: true }) }
+    try {
+      const paths = atendimentos.flatMap((a) => (a.fotos || []).map((f) => f.path))
+      await deleteCliente(cliente) // os atendimentos caem em cascata; fotos do Storage só depois, em melhor esforço
+      await removerFotos(paths)
+      navigate('/', { replace: true })
+    }
     catch (e) { toast(mensagemDeErro(e), false) }
   }
 
