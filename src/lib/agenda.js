@@ -49,3 +49,22 @@ export function conflita(a, b) {
   const bI = ini(b), bF = bI + Number(b.duracao_min || 0)
   return aI < bF && bI < aF
 }
+
+// agendamento que passa da meia-noite? (termina às 24:00 exatas = não)
+export function cruzaMeiaNoite(hora, duracaoMin) {
+  const [h, m] = hora.split(':').map(Number)
+  return h * 60 + m + Number(duracaoMin || 0) > 1440
+}
+
+// idade em anos em `hojeISOStr`, lendo 'YYYY-MM-DD' por partes (sem Date/UTC); inválido => null
+export function idadeDe(nascISO, hojeISOStr) {
+  const mn = /^(\d{4})-(\d{2})-(\d{2})$/.exec(nascISO || '')
+  if (!mn) return null
+  const [, ny, nm, nd] = mn.map(Number)
+  const [hy, hm, hd] = hojeISOStr.split('-').map(Number)
+  // 29/02 em ano não bissexto: aniversário conta em 01/03
+  const bissexto = (y) => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0
+  const [am, ad] = nm === 2 && nd === 29 && !bissexto(hy) ? [3, 1] : [nm, nd]
+  const a = hy - ny - (hm < am || (hm === am && hd < ad) ? 1 : 0)
+  return a >= 0 && a < 130 ? a : null
+}
