@@ -24,7 +24,7 @@ Config em `eslint.config.mjs`, escopo `src/**/*.{js,jsx}` (as regras locais vêm
 | `react-hooks/rules-of-hooks` | erro | 0 | `src/` | Manter em 0. |
 | `quality/max-lines` (350 linhas) | erro | 0 | `src/` | Manter em 0; dividir o arquivo antes de passar do limite. |
 | `no-unused-vars` | aviso | 1 | `src/` | Corrigir o aviso restante ao tocar o arquivo e subir a erro. Prefixo `_` ignora. |
-| `react-hooks/exhaustive-deps` | aviso | 6 | `src/` | Revisar caso a caso (corrigir dependência ou justificar); não silenciar em bloco. |
+| `react-hooks/exhaustive-deps` | aviso | 2 | `src/` | Revisar caso a caso (corrigir dependência ou justificar); não silenciar em bloco. |
 | `quality/no-direct-console` | desligada | n/a | n/a | Sem logger no projeto; ligar só se houver um. |
 | `quality/no-direct-data-access` | desligada | n/a | n/a | `lib/supabase` só é importado por `AuthContext` e `Login`; o acesso a dados já passa por `src/lib/db.js`. |
 
@@ -32,7 +32,7 @@ Também ativa `@eslint/js` recommended (em `src/`, `scripts/`, `vite.config.js` 
 
 Uma regra inline em `eslint.config.mjs` (`jsx-uses/mark-used`, sem dependência nova) marca como usados os componentes referenciados só em JSX, porque o projeto não usa `eslint-plugin-react`. Antes dela havia 42 avisos de `no-unused-vars`, 41 deles falsos positivos (medido com `npx eslint . -f json`); o que sobra é real (`AgendamentoDetail.jsx`, linha 44).
 
-Total do lint: 0 erros, 7 avisos (1 + 6). `verify:rules` imprime `ok` para as três regras locais.
+Total do lint: 0 erros, 3 avisos (1 `no-unused-vars` + 2 `exhaustive-deps`: `Agenda.jsx` ABERTOS e `AgendamentoDetail.jsx` carregar; histórico 42 + 6, depois 1 + 6, agora 1 + 2; os 3 restantes ficam para a rodada 2). `verify:rules` imprime `ok` para as três regras locais.
 
 ## Estratégia de teste real
 
