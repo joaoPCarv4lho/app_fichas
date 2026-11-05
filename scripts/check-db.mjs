@@ -41,6 +41,11 @@ try {
     console.log('   Rode o supabase/schema.sql no SQL Editor do Supabase.')
     process.exit(1)
   }
+  if (error && /invalid api key|invalid jwt|malformed/i.test(error.message)) {
+    console.log('\n❌ Chave inválida:', error.message)
+    console.log('   Confira o VITE_SUPABASE_ANON_KEY no .env.')
+    process.exit(1)
+  }
   if (error && !/row-level security|permission|JWT/i.test(error.message)) {
     console.log('\n❌ Erro ao consultar:', error.message)
     process.exit(1)
