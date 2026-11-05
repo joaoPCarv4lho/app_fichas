@@ -6,6 +6,10 @@ import { FICHAS } from '../data/fichaSchemas.js'
 import { gerarPdfAnamnese } from '../lib/pdf.js'
 import { avatarColor, iniciais } from '../lib/ui.js'
 import { SkeletonDetail } from '../components/Skeleton.jsx'
+import ErroCarga from '../components/ErroCarga.jsx'
+import { mensagemDeErro } from '../lib/erros.js'
+import { useToast } from '../components/Toast.jsx'
+import { useConfirm } from '../components/ConfirmDialog.jsx'
 import { useAuth } from '../auth/AuthContext.jsx'
 
 export default function ClienteDetail() {
@@ -15,23 +19,30 @@ export default function ClienteDetail() {
   const [cliente, setCliente] = useState(null)
   const [anamneses, setAnamneses] = useState([])
   const [atendimentos, setAtendimentos] = useState([])
-  const [erro, setErro] = useState('')
+  const toast = useToast()
+  const confirmar = useConfirm()
+  const [erro, setErro] = useState(null)
+  const [tentativa, setTentativa] = useState(0)
 
   useEffect(() => {
+    let ativo = true
+    setErro(null); setCliente(null)
     Promise.all([getCliente(id), getAnamneses(id), listAtendimentos(id)])
-      .then(([c, an, at]) => { setCliente(c); setAnamneses(an); setAtendimentos(at) })
-      .catch((e) => setErro(e.message))
-  }, [id])
+      .then(([c, an, at]) => { if (ativo) { setCliente(c); setAnamneses(an); setAtendimentos(at) } })
+      .catch((e) => ativo && setErro(e || new Error('erro')))
+    return () => { ativo = false }
+  }, [id, tentativa])
 
   const anamneseDe = (tipo) => anamneses.find((a) => a.tipo === tipo)
 
   const excluir = async () => {
-    if (!confirm(`Excluir ${cliente.nome} e todos os seus registros? Esta ação não pode ser desfeita.`)) return
+    const ok = await confirmar({ titulo: `Excluir ${cliente.nome}?`, texto: 'Todos os seus registros serão excluídos. Esta ação não pode ser desfeita.', ok: 'Excluir', perigo: true })
+    if (!ok) return
     try { await deleteCliente(id); navigate('/', { replace: true }) }
-    catch (e) { alert('Erro ao excluir: ' + e.message) }
+    catch (e) { toast(mensagemDeErro(e), false) }
   }
 
-  if (erro) return <div className="app"><TopBar title="Cliente" /><div className="content"><div className="notice">{erro}</div></div></div>
+  if (erro) return <div className="app"><TopBar title="Cliente" /><div className="content"><ErroCarga erro={erro} onRetry={() => setTentativa((t) => t + 1)} /></div></div>
   if (!cliente) return <div className="app"><TopBar title="Cliente" /><div className="content"><SkeletonDetail /></div></div>
 
   const cor = avatarColor(cliente.nome)

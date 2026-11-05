@@ -1,29 +1,44 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import TabBar from '../components/TabBar.jsx'
 import { SkeletonList } from '../components/Skeleton.jsx'
+import ErroCarga from '../components/ErroCarga.jsx'
+import { useToast } from '../components/Toast.jsx'
+import { mensagemDeErro } from '../lib/erros.js'
 import { listAgendamentos } from '../lib/db.js'
 import { STATUS, hojeISO, addDias, rotuloDia, hhmm, fimDe } from '../lib/agenda.js'
 
+const ABERTOS = ['agendado', 'confirmado']
+const FECHADOS = ['realizado', 'cancelado', 'faltou']
+
 export default function Agenda() {
   const navigate = useNavigate()
+  const toast = useToast()
   const [aba, setAba] = useState('dia') // 'dia' | 'proximos'
   const [dia, setDia] = useState(hojeISO())
   const [items, setItems] = useState(null)
   const [concluidos, setConcluidos] = useState(null) // null = escondido
-  const [erro, setErro] = useState('')
-
-  const ABERTOS = ['agendado', 'confirmado']
-  const FECHADOS = ['realizado', 'cancelado', 'faltou']
+  const [carregandoConc, setCarregandoConc] = useState(false)
+  const [erro, setErro] = useState(null)
+  const [tentativa, setTentativa] = useState(0)
+  const reqConc = useRef(0) // invalida resposta de "Ver concluídos" ao trocar dia/aba
 
   useEffect(() => {
-    setItems(null); setErro(''); setConcluidos(null)
+    let ativo = true
+    reqConc.current++
+    setItems(null); setErro(null); setConcluidos(null); setCarregandoConc(false)
     const q = aba === 'dia' ? { dia, status: ABERTOS } : { de: hojeISO(), status: ABERTOS }
-    listAgendamentos(q).then(setItems).catch((e) => { setErro(e.message); setItems([]) })
-  }, [aba, dia])
+    listAgendamentos(q).then((r) => ativo && setItems(r)).catch((e) => ativo && setErro(e || new Error('erro')))
+    return () => { ativo = false }
+  }, [aba, dia, tentativa])
 
   const verConcluidos = () => {
-    listAgendamentos({ dia, status: FECHADOS }).then(setConcluidos).catch((e) => setErro(e.message))
+    const req = ++reqConc.current
+    setCarregandoConc(true)
+    listAgendamentos({ dia, status: FECHADOS })
+      .then((r) => { if (req === reqConc.current) setConcluidos(r) })
+      .catch((e) => { if (req === reqConc.current) toast(mensagemDeErro(e), false) })
+      .finally(() => { if (req === reqConc.current) setCarregandoConc(false) })
   }
 
   return (
@@ -54,8 +69,8 @@ export default function Agenda() {
           <button className="btn ghost sm" style={{ margin: '0 auto 12px', display: 'block' }} onClick={() => setDia(hojeISO())}>Voltar para hoje</button>
         )}
 
-        {erro && <div className="notice">Erro: {erro}</div>}
-        {items === null && <SkeletonList rows={3} />}
+        {erro && <ErroCarga erro={erro} onRetry={() => setTentativa((t) => t + 1)} />}
+        {!erro && items === null && <SkeletonList rows={3} />}
 
         {items && items.length === 0 && (
           <div className="empty">
@@ -69,7 +84,7 @@ export default function Agenda() {
 
         {aba === 'dia' && items && (
           concluidos === null ? (
-            <button className="btn ghost sm" style={{ margin: '8px auto 0', display: 'block' }} onClick={verConcluidos}>Ver concluídos do dia</button>
+            <button className="btn ghost sm" style={{ margin: '8px auto 0', display: 'block' }} disabled={carregandoConc} onClick={verConcluidos}>{carregandoConc ? 'Carregando…' : 'Ver concluídos do dia'}</button>
           ) : (
             <>
               <div className="section-title">Concluídos</div>

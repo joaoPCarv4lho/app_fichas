@@ -1,7 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import TopBar from '../components/TopBar.jsx'
 import { useToast } from '../components/Toast.jsx'
+import { useConfirm } from '../components/ConfirmDialog.jsx'
+import ErroCarga from '../components/ErroCarga.jsx'
+import { mensagemDeErro } from '../lib/erros.js'
 import { getAgendamento, patchAgendamento, deleteAgendamento } from '../lib/db.js'
 import { STATUS, hhmm, fimDe, rotuloDia } from '../lib/agenda.js'
 
@@ -9,14 +12,22 @@ export default function AgendamentoDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const toast = useToast()
+  const confirmar = useConfirm()
   const [ag, setAg] = useState(null)
-  const [erro, setErro] = useState('')
+  const [erro, setErro] = useState(null)
+  const [tentativa, setTentativa] = useState(0)
   const [busy, setBusy] = useState(false)
 
-  const carregar = () => getAgendamento(id).then(setAg).catch((e) => setErro(e.message))
-  useEffect(() => { carregar() }, [id])
+  // recarrega após mudar status (sem cleanup: só roda por ação da usuária)
+  const recarregar = useCallback(() => getAgendamento(id).then(setAg), [id])
+  useEffect(() => {
+    let ativo = true
+    setErro(null); setAg(null)
+    getAgendamento(id).then((r) => ativo && setAg(r)).catch((e) => ativo && setErro(e || new Error('erro')))
+    return () => { ativo = false }
+  }, [id, tentativa])
 
-  if (erro) return <div className="app"><TopBar title="Agendamento" /><div className="content"><div className="notice">{erro}</div></div></div>
+  if (erro) return <div className="app"><TopBar title="Agendamento" /><div className="content"><ErroCarga erro={erro} onRetry={() => setTentativa((t) => t + 1)} /></div></div>
   if (!ag) return <div className="app"><TopBar title="Agendamento" /><div className="content"><div className="sk sk-card" style={{ height: 120 }} /></div></div>
 
   const nome = ag.cliente?.nome || ag.nome_avulso || 'Sem nome'
@@ -29,19 +40,27 @@ export default function AgendamentoDetail() {
     try {
       await patchAgendamento(id, { status: novo })
       if (sair) { toast(`Marcado como ${STATUS[novo].label.toLowerCase()}`); navigate('/', { replace: true }) }
-      else { toast(`Marcado como ${STATUS[novo].label.toLowerCase()}`); await carregar(); setBusy(false) }
-    } catch (e) { alert('Erro: ' + e.message); setBusy(false) }
+      else { toast(`Marcado como ${STATUS[novo].label.toLowerCase()}`); await recarregar(); setBusy(false) }
+    } catch (e) { toast(mensagemDeErro(e), false); setBusy(false) }
+  }
+
+  const cancelar = async () => {
+    if (await confirmar({ titulo: 'Cancelar este agendamento?', texto: 'Ele sairá da lista de abertos. Você pode reabrir depois.', ok: 'Cancelar agendamento', perigo: true })) mudar('cancelado', true)
+  }
+  const faltou = async () => {
+    if (await confirmar({ titulo: 'Marcar como faltou?', texto: 'Você pode reabrir depois.', ok: 'Marcar como faltou' })) mudar('faltou', true)
   }
 
   const excluir = async () => {
-    if (!confirm('Excluir este agendamento?')) return
+    const ok = await confirmar({ titulo: 'Excluir este agendamento?', texto: 'Esta ação não pode ser desfeita.', ok: 'Excluir', perigo: true })
+    if (!ok) return
     try { await deleteAgendamento(id); toast('Agendamento excluído'); navigate('/', { replace: true }) }
-    catch (e) { alert('Erro: ' + e.message) }
+    catch (e) { toast(mensagemDeErro(e), false) }
   }
 
   const abrirWhats = () => {
     const num = fone.replace(/\D/g, '')
-    const [a, m, d] = ag.data.split('-')
+    const [, m, d] = ag.data.split('-')
     const msg = encodeURIComponent(`Oi, ${nome.split(' ')[0]}! Passando para confirmar seu horário no dia ${d}/${m} às ${hhmm(ag.hora)} 💅`)
     window.open(`https://wa.me/55${num}?text=${msg}`, '_blank')
   }
@@ -96,8 +115,8 @@ export default function AgendamentoDetail() {
             </div>
 
             <div className="row" style={{ marginTop: 10, gap: 10 }}>
-              <button className="btn ghost sm" disabled={busy} onClick={() => mudar('cancelado', true)}>Cancelar</button>
-              <button className="btn ghost sm" disabled={busy} onClick={() => mudar('faltou', true)}>Faltou</button>
+              <button className="btn ghost sm" disabled={busy} onClick={cancelar}>Cancelar</button>
+              <button className="btn ghost sm" disabled={busy} onClick={faltou}>Faltou</button>
               <button className="btn ghost sm" onClick={editar}>Editar</button>
             </div>
           </>

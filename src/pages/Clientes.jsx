@@ -4,6 +4,7 @@ import { listClientes } from '../lib/db.js'
 import { avatarColor, iniciais } from '../lib/ui.js'
 import { SkeletonList } from '../components/Skeleton.jsx'
 import TabBar from '../components/TabBar.jsx'
+import ErroCarga from '../components/ErroCarga.jsx'
 import { useAuth } from '../auth/AuthContext.jsx'
 
 export default function Clientes() {
@@ -11,11 +12,15 @@ export default function Clientes() {
   const { isAdmin } = useAuth()
   const [clientes, setClientes] = useState(null)
   const [busca, setBusca] = useState('')
-  const [erro, setErro] = useState('')
+  const [erro, setErro] = useState(null)
+  const [tentativa, setTentativa] = useState(0)
 
   useEffect(() => {
-    listClientes().then(setClientes).catch((e) => { setErro(e.message); setClientes([]) })
-  }, [])
+    let ativo = true
+    setErro(null); setClientes(null)
+    listClientes().then((r) => ativo && setClientes(r)).catch((e) => ativo && setErro(e || new Error('erro')))
+    return () => { ativo = false }
+  }, [tentativa])
 
   const filtrados = (clientes || []).filter((c) =>
     c.nome.toLowerCase().includes(busca.toLowerCase().trim())
@@ -38,10 +43,10 @@ export default function Clientes() {
           <input className="search" placeholder="Buscar cliente…" value={busca} onChange={(e) => setBusca(e.target.value)} style={{ marginTop: 16 }} />
         )}
 
-        {erro && <div className="notice">Erro ao carregar: {erro}</div>}
-        {clientes === null && <div style={{ marginTop: 16 }}><SkeletonList rows={4} /></div>}
+        {erro && <ErroCarga erro={erro} onRetry={() => setTentativa((t) => t + 1)} />}
+        {!erro && clientes === null && <div style={{ marginTop: 16 }}><SkeletonList rows={4} /></div>}
 
-        {clientes && filtrados.length === 0 && (
+        {!erro && clientes && filtrados.length === 0 && (
           <div className="empty">
             <div className="big">{busca ? '🔍' : '🌸'}</div>
             {busca ? (
