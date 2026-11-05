@@ -6,3 +6,5 @@ dist-ssr
 .env.local
 .DS_Store
 .vite
+.superpowers/
+.claude/scheduled_tasks.lock
