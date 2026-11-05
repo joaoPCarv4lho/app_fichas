@@ -8,7 +8,7 @@ import { mensagemDeErro } from '../lib/erros.js'
 import {
   listClientes, listAgendamentos, getAgendamento, saveAgendamento,
 } from '../lib/db.js'
-import { DURACOES, hojeISO, hhmm, conflita } from '../lib/agenda.js'
+import { DURACOES, hojeISO, hhmm, conflita, cruzaMeiaNoite } from '../lib/agenda.js'
 
 const pad = (n) => String(n).padStart(2, '0')
 const HORAS = Array.from({ length: 24 }, (_, i) => pad(i))
@@ -202,6 +202,7 @@ export default function AgendamentoForm() {
               </div>
             </div>
             {erroConflito && <div className="hint" style={{ marginTop: 14 }}>Não foi possível verificar conflitos de horário.</div>}
+            {cruzaMeiaNoite(hora, duracao) && <div className="notice" style={{ marginTop: 14 }}>Este horário termina depois da meia-noite; o fim aparece como horário do dia seguinte e conflitos com o outro dia não são verificados.</div>}
             {conflito && <div className="notice" style={{ marginTop: 14 }}>⚠️ Já existe outro horário nesse intervalo. Você pode salvar mesmo assim.</div>}
           </div>
 
