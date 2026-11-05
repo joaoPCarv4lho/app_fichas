@@ -13,7 +13,9 @@ Estado verificado em 2026-11-05 (Node 24, Windows). Cada número abaixo vem de u
 | `npm run check` | `lint` + `verify:rules` + `test` + `build`, nessa ordem. Não publica nem toca produção. Resultado em 2026-11-05: passou. |
 | `npm run check:db` | Valida `.env` e conexão com o Supabase. Exige `.env` e rede; **não** faz parte de `check`. |
 
-**Testes:** só lógica pura de `src/lib` (hoje `resposta.js` e `agenda.js`: datas locais, conflito de horário, idade, meia-noite; 18 testes), via `npm test`. Componentes e fluxos de UI não têm teste automatizado (exigem login); sem framework adicional (YAGNI).
+**Testes:** só lógica pura de `src/lib` (hoje `resposta.js`, `agenda.js` e `linhas.js`, mais as mensagens de `erros.js`; 21 testes), via `npm test`. Componentes e fluxos de UI não têm teste automatizado (exigem login); sem framework adicional (YAGNI).
+
+**Integridade ao salvar/excluir (rodada 3, T2):** resolvidos por código, **não testados no app** (dependem do Supabase real e de login): retry de atendimento duplicando (id gerado no cliente + fotos já enviadas reaproveitadas), update/delete com 0 linhas voltando como sucesso (`exigeLinhas`), exclusão apagando fotos antes da linha, fotos órfãs ao excluir atendimento/cliente e ao remover foto no formulário, agendamentos sem nome após excluir cliente, `uid()` sem sessão (A4, A6, A11, S1, G8). Restam: fotos órfãs se a usuária abandonar o formulário depois de um upload parcial, e a falta de transação (salvar atendimento e vincular agendamento são passos separados; o retry é idempotente, mas não atômico).
 
 ## Regras adotadas
 
