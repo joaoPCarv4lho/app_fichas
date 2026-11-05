@@ -15,7 +15,10 @@ Use só comandos que existem; não invente scripts.
 - Build: `npm run build`
 - Preview do build: `npm run preview`
 - Checar `.env` e banco: `npm run check:db`
-- Lint, testes e verificação combinada: ver `docs/quality.md`
+- Lint: `npm run lint`
+- Regras locais: `npm run verify:rules`
+- Testes: indisponível (ver `docs/quality.md`)
+- Verificação combinada: `npm run check` (lint + verify:rules + build)
 
 ## Acordos de trabalho
 
@@ -40,9 +43,15 @@ Use só comandos que existem; não invente scripts.
 - **Ponytail:** modo `full` para código. `stop ponytail` desativa.
 - **Caveman:** conversa concisa no idioma do usuário; código, docs e commits em linguagem normal. `stop caveman` desativa.
 - **Superpowers:** use as skills relevantes, na medida do escopo.
-- **Context7:** consulte documentação atual de APIs e bibliotecas; nunca envie segredos ou código privado.
+- **Context7:** consulte documentação atual de APIs e bibliotecas; nunca envie segredos ou código privado. Configurado em `.mcp.json`, mas só carrega após reiniciar o Claude Code e confiar no arquivo.
 - **RTK, Graphify:** bloqueados nesta máquina; ver `docs/setup.md`.
-- Skills do projeto: ver `docs/setup.md`.
+- **Skills do projeto** (`.claude/skills/`):
+  - `supabase-postgres-best-practices`: ao criar ou alterar SQL, RLS, índices ou diagnosticar consulta lenta.
+  - `vercel-react-best-practices`: ao escrever ou revisar componentes React e desempenho.
+  - `vercel-composition-patterns`: ao refatorar componentes com props demais ou composição confusa.
+  - `web-design-guidelines`: ao revisar UI, acessibilidade e UX.
+  - `find-skills`: quando faltar uma capacidade e for preciso procurar uma skill instalável.
+  - Detalhes e pendências: `docs/setup.md`.
 
 ## Delegação e revisão
 
