@@ -9,7 +9,7 @@ Versões de `package.json` (instaladas conforme `package-lock.json`, `lockfileVe
 - Vite 5.4 com `@vitejs/plugin-react` 4.7 e `vite-plugin-pwa` 0.20 (`generateSW`)
 - `@supabase/supabase-js` 2.116 (banco, auth e Storage)
 - jsPDF 2.5 (PDF da ficha)
-- Node 24, npm 12; JavaScript puro, sem TypeScript e sem testes automatizados.
+- Node 24, npm 12; JavaScript puro, sem TypeScript; testes automatizados só para lógica pura de `src/lib` (`npm test`).
 
 ## Mapa do código
 
@@ -47,7 +47,7 @@ UI (páginas) → `src/lib/db.js` → Supabase. As páginas chamam funções com
 ## Modelo de dados
 
 - `clientes`: nome, nascimento, whatsapp, e-mail, como_conheceu, observacoes.
-- `anamneses`: uma por cliente e tipo (`unique (cliente_id, tipo)`), `respostas` em jsonb, consentimento (texto, assinatura em data URL, data).
+- `anamneses`: uma por cliente e tipo (`unique (cliente_id, tipo)`), `respostas` em jsonb, consentimento (texto, assinatura em data URL, data). Ao editar uma ficha já assinada, a assinatura anterior continua valendo (decisão do usuário: não exige nova) e `consent_data` original é mantida.
 - `atendimentos`: por visita, `fotos` em jsonb (`path` + `momento` antes/depois), `data`.
 - `agendamentos`: data, hora, `duracao_min`, status, cliente ou nome/telefone avulsos, `atendimento_id` opcional. `cliente_id` é `on delete set null` (excluir a cliente mantém o agendamento).
 - Todas têm `user_id not null` com RLS `auth.uid() = user_id`. Em clientes, anamneses e atendimentos, excluir exige `app_metadata.role = 'admin'` (políticas criadas por `roles.sql`); em agendamentos o dono pode excluir.

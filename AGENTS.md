@@ -17,8 +17,8 @@ Use só comandos que existem; não invente scripts.
 - Checar `.env` e banco: `npm run check:db`
 - Lint: `npm run lint`
 - Regras locais: `npm run verify:rules`
-- Testes: indisponível (ver `docs/quality.md`)
-- Verificação combinada: `npm run check` (lint + verify:rules + build)
+- Testes (lógica de `src/lib`): `npm test`
+- Verificação combinada: `npm run check` (lint + verify:rules + test + build)
 
 ## Acordos de trabalho
 

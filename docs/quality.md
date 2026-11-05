@@ -9,10 +9,11 @@ Estado verificado em 2026-11-05 (Node 24, Windows). Cada número abaixo vem de u
 | `npm run lint` | ESLint 9 sobre o projeto. Erros bloqueiam (saída ≠ 0); avisos não. |
 | `npm run verify:rules` | Self-check das regras locais em `eslint-rules/` (`quality/max-lines`, `quality/no-direct-console`, `quality/no-direct-data-access`). |
 | `npm run build` | Build de produção do Vite (`dist/`). Não publica. |
-| `npm run check` | `lint` + `verify:rules` + `build`, nessa ordem. Não publica nem toca produção. Resultado em 2026-11-05: passou. |
+| `npm test` | Testes de `src/lib/*.test.js` com o runner nativo `node:test` (sem dependência). |
+| `npm run check` | `lint` + `verify:rules` + `test` + `build`, nessa ordem. Não publica nem toca produção. Resultado em 2026-11-05: passou. |
 | `npm run check:db` | Valida `.env` e conexão com o Supabase. Exige `.env` e rede; **não** faz parte de `check`. |
 
-**Testes: indisponíveis.** O projeto não tem framework de testes e nenhum foi adicionado: não há lógica pura testável que justifique (a regra de negócio está em componentes e SQL) e criar um seria escopo não pedido (YAGNI).
+**Testes:** só lógica pura de `src/lib` (hoje `resposta.js`), via `npm test`. Componentes e fluxos de UI não têm teste automatizado (exigem login); sem framework adicional (YAGNI).
 
 ## Regras adotadas
 

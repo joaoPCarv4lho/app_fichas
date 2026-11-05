@@ -184,7 +184,7 @@ Decisões a revisar, com gatilho:
 | Decisão | Gatilho para revisar |
 |---|---|
 | Vite 5.x / React 18 / react-router 6 / jsPDF 2 | Vite 6+ for necessário, ou correção de vulnerabilidade exigir major |
-| Sem testes | Surgir lógica pura reutilizável, ou adoção de um framework de testes |
+| Testes só em `src/lib` (`node:test`) | Surgir necessidade de testar componentes/UI, ou adoção de um framework de testes |
 | Sem CI e sem `gh-fix-ci` | Criar remoto e CI no GitHub |
 | Regras `quality/no-direct-*` desligadas | Surgir logger ou camada de dados mais estrita |
 | Memória nativa, sem Obsidian | Mais de 2 usuários trabalharem no projeto |
