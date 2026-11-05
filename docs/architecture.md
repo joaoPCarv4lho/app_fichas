@@ -9,7 +9,7 @@ Versões de `package.json` (instaladas conforme `package-lock.json`, `lockfileVe
 - Vite 5.4 com `@vitejs/plugin-react` 4.7 e `vite-plugin-pwa` 0.20 (`generateSW`)
 - `@supabase/supabase-js` 2.119 (banco, auth e Storage)
 - jsPDF 2.5 (PDF da ficha)
-- Node 20+ (testado no 24), npm 12; JavaScript puro, sem TypeScript; testes automatizados só para lógica pura de `src/lib` (`npm test`).
+- Node 22+ (testado no 24), npm 12; JavaScript puro, sem TypeScript; testes automatizados só para lógica pura de `src/lib` (`npm test`).
 
 ## Mapa do código
 
@@ -37,9 +37,9 @@ Rotas (em `src/App.jsx`): `/` (Agenda), `/agendamento/novo`, `/agendamento/:id`,
 ## Hospedagem (vercel.json)
 
 - Rewrite SPA só para caminhos sem extensão e fora de `/assets/`: `/cliente/abc` serve `index.html`; arquivo inexistente (`/foo.png`, `/assets/x.js`) dá 404 em vez de HTML.
-- Cabeçalhos em todas as rotas: `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Permissions-Policy` (só câmera para o próprio site), `Strict-Transport-Security`.
-- CSP apenas em modo relatório (`Content-Security-Policy-Report-Only`): não bloqueia nada. Promover a `Content-Security-Policy` fica pendente até testar o app logado com o DevTools aberto e conferir que não há violação.
-- Cache: `sw.js`, `index.html`, `registerSW.js` e `manifest.webmanifest` com `max-age=0, must-revalidate`; `/assets/*` com `max-age=31536000, immutable`.
+- Cabeçalhos em todas as rotas: `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Permissions-Policy` (só câmera para o próprio site). Sem `Strict-Transport-Security` próprio: a Vercel já envia um mais forte (2 anos, `includeSubDomains`, `preload`) e o nosso o enfraqueceria. O conjunto validado na prévia mudou por esta remoção e pela do `registerSW.js` abaixo.
+- CSP apenas em modo relatório (`Content-Security-Policy-Report-Only`): não bloqueia nada. Para promover: com o app logado e o DevTools aberto, passar por login, foto, assinatura, PDF, WhatsApp e recarga offline; ignorar violações de `vercel.live` em prévias; sem violações, renomear o cabeçalho para `Content-Security-Policy`.
+- Cache: `sw.js`, `index.html` e `manifest.webmanifest` com `max-age=0, must-revalidate`; `/assets/*` com `max-age=31536000, immutable`.
 
 ## Fluxo de dados
 
@@ -71,7 +71,7 @@ SQL manual, colado no SQL Editor do Supabase, nesta ordem: `supabase/schema.sql`
 - `mensagemDeErro(e)` (`src/lib/erros.js`) converte qualquer erro em texto pt-BR (sem conexão, sessão expirada, permissão, duplicado, genérico) e registra o original no console.
 - Toast de erro: `useToast()(msg, false)` mostra faixa vermelha com `role="alert"` por 5 s.
 - `useConfirm()` (`ConfirmDialog.jsx`) devolve `confirmar({ titulo, texto, ok, voltar, perigo })` → Promise<boolean> (`voltar` = rótulo do botão de voltar, padrão "Cancelar"; o diálogo fecha como `false` ao mudar de rota ou de sessão); substitui `confirm()`/`alert()` nativos.
-- **Atualização do PWA por aviso.** `registerType: 'prompt'` (`vite.config.js`): o SW novo fica em espera e nunca recarrega sozinho, para não perder uma ficha não salva. `src/lib/pwa.js` registra o SW (`virtual:pwa-register`), guarda o estado "há versão nova" e verifica atualização ao voltar a ficar visível (no máximo 1 vez por hora). `AtualizacaoPwa` mostra, no topo da tela, "Nova versão disponível." com "Atualizar agora" (manda `SKIP_WAITING`, o SW assume e a página recarrega) e "Depois" (some até a próxima abertura). No `dist/sw.js` o `skipWaiting()` só roda no handler da mensagem `SKIP_WAITING`. Dados do Supabase nunca passam pelo cache do SW (só o precache dos arquivos do build). Limitação: se a usuária tocar em "Atualizar agora" em uma aba, as outras abas do app recarregam junto (evento `controlling`).
+- **Atualização do PWA por aviso.** `registerType: 'prompt'` (`vite.config.js`): o SW novo fica em espera e nunca recarrega sozinho, para não perder uma ficha não salva. `src/lib/pwa.js` registra o SW (`virtual:pwa-register`), guarda o estado "há versão nova" e verifica atualização ao voltar a ficar visível (no máximo 1 vez por hora). `AtualizacaoPwa` mostra, no topo da tela, "Nova versão disponível." com "Atualizar agora" (manda `SKIP_WAITING`, o SW assume e a página recarrega) e "Depois" (some até a próxima abertura). No `dist/sw.js` o `skipWaiting()` só roda no handler da mensagem `SKIP_WAITING`. Dados do Supabase nunca passam pelo cache do SW (só o precache dos arquivos do build). "Atualizar agora" recarrega todas as janelas abertas do app (evento `controlling` do workbox); "Depois" só esconde o aviso nesta sessão (volta na próxima abertura). A verificação por hora de `lib/pwa.js` nunca roda na primeira hora da sessão nem em abertura a frio (o navegador já reconfere o `sw.js` ao navegar, e ele é `must-revalidate`). Aparelhos ainda na versão `autoUpdate` instalam o SW novo em espera e só o ativam quando todas as janelas antigas fecham (sem aviso na página antiga, sem perda de dados); para correção urgente, peça para fechar o app por completo e abrir de novo.
 - **Rotas com `React.lazy`.** `ClienteDetail`, `ClienteForm`, `AnamneseForm`, `AtendimentoForm`, `AgendamentoForm`, `AgendamentoDetail` e `Configuracoes` são chunks separados (`App.jsx`, `Suspense` com `SkeletonDetail`); Agenda, Clientes, Login, PinLock e NotConfigured ficam no pacote principal. O jsPDF (`lib/pdf.js`) é importado dinamicamente ao tocar em "PDF". Todos os chunks entram no precache do SW (offline). Se um chunk não baixar (versão antiga, rede), o `import()` rejeita, o React lança no render e o `ErrorBoundary` mostra "Recarregar".
 - `ErrorBoundary` envolve o `App` e mostra "Algo deu errado" + Recarregar. Limitação do React: não captura erros em handlers de evento nem código assíncrono; esses usam `mensagemDeErro` + Toast.
 
