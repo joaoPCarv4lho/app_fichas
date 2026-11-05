@@ -40,7 +40,9 @@ export default function ClienteDetail() {
     const ok = await confirmar({ titulo: `Excluir ${cliente.nome}?`, texto: 'Todos os seus registros serão excluídos. Esta ação não pode ser desfeita.', ok: 'Excluir', perigo: true })
     if (!ok) return
     try {
-      const paths = atendimentos.flatMap((a) => (a.fotos || []).map((f) => f.path))
+      // relê a lista: atendimento criado em outro aparelho depois do carregamento também perde as fotos
+      const lista = await listAtendimentos(id).catch(() => atendimentos)
+      const paths = lista.flatMap((a) => (a.fotos || []).map((f) => f.path)).filter(Boolean)
       await deleteCliente(cliente) // os atendimentos caem em cascata; fotos do Storage só depois, em melhor esforço
       await removerFotos(paths)
       navigate('/', { replace: true })
@@ -52,6 +54,7 @@ export default function ClienteDetail() {
   if (!cliente) return <div className="app"><TopBar title="Cliente" /><div className="content"><SkeletonDetail /></div></div>
 
   const cor = avatarColor(cliente.nome)
+  const idade = idadeDe(cliente.nascimento, hojeISO())
 
   return (
     <div className="app">
@@ -64,7 +67,7 @@ export default function ClienteDetail() {
             <div>
               <div style={{ fontWeight: 600, fontSize: 17 }}>{cliente.nome}</div>
               <div className="muted" style={{ fontSize: 14 }}>
-                {idadeDe(cliente.nascimento, hojeISO()) && `${idadeDe(cliente.nascimento, hojeISO())} anos · `}
+                {idade != null && `${idade} anos · `}
                 {cliente.whatsapp || 'sem telefone'}
               </div>
             </div>
