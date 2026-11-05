@@ -19,8 +19,11 @@ if (typeof window !== 'undefined') {
   })
 }
 
-export const isIOS = typeof navigator !== 'undefined' &&
-  /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream
+// iPadOS 13+ se identifica como Mac: distingue pelo toque.
+export const isIOS = typeof navigator !== 'undefined' && !window.MSStream && (
+  /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+)
 
 export const isStandalone = typeof window !== 'undefined' && (
   window.matchMedia?.('(display-mode: standalone)').matches ||
