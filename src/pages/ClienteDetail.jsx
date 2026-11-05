@@ -3,7 +3,6 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import TopBar from '../components/TopBar.jsx'
 import { getCliente, getAnamneses, listAtendimentos, deleteCliente, removerFotos } from '../lib/db.js'
 import { FICHAS } from '../data/fichaSchemas.js'
-import { gerarPdfAnamnese } from '../lib/pdf.js'
 import { hojeISO, idadeDe } from '../lib/agenda.js'
 import { avatarColor, iniciais } from '../lib/ui.js'
 import { SkeletonDetail } from '../components/Skeleton.jsx'
@@ -46,6 +45,14 @@ export default function ClienteDetail() {
       await deleteCliente(cliente) // os atendimentos caem em cascata; fotos do Storage só depois, em melhor esforço
       await removerFotos(paths)
       navigate('/', { replace: true })
+    }
+    catch (e) { toast(mensagemDeErro(e), false) }
+  }
+
+  async function baixarPdf(a, f) {
+    try {
+      const { gerarPdfAnamnese } = await import('../lib/pdf.js') // jsPDF só baixa quando precisa
+      gerarPdfAnamnese(cliente, a, f)
     }
     catch (e) { toast(mensagemDeErro(e), false) }
   }
@@ -101,7 +108,7 @@ export default function ClienteDetail() {
                 <button className="btn secondary sm" onClick={() => navigate(`/cliente/${id}/anamnese/${f.key}`)}>
                   {a ? 'Ver / editar' : 'Preencher'}
                 </button>
-                {a && <button className="btn ghost sm" onClick={() => gerarPdfAnamnese(cliente, a, f)}>📄 PDF</button>}
+                {a && <button className="btn ghost sm" onClick={() => baixarPdf(a, f)}>📄 PDF</button>}
               </div>
             </div>
           )
