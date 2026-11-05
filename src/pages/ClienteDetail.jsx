@@ -4,6 +4,7 @@ import TopBar from '../components/TopBar.jsx'
 import { getCliente, getAnamneses, listAtendimentos, deleteCliente } from '../lib/db.js'
 import { FICHAS } from '../data/fichaSchemas.js'
 import { gerarPdfAnamnese } from '../lib/pdf.js'
+import { hojeISO, idadeDe } from '../lib/agenda.js'
 import { avatarColor, iniciais } from '../lib/ui.js'
 import { SkeletonDetail } from '../components/Skeleton.jsx'
 import ErroCarga from '../components/ErroCarga.jsx'
@@ -58,7 +59,7 @@ export default function ClienteDetail() {
             <div>
               <div style={{ fontWeight: 600, fontSize: 17 }}>{cliente.nome}</div>
               <div className="muted" style={{ fontSize: 14 }}>
-                {idade(cliente.nascimento) && `${idade(cliente.nascimento)} anos · `}
+                {idadeDe(cliente.nascimento, hojeISO()) && `${idadeDe(cliente.nascimento, hojeISO())} anos · `}
                 {cliente.whatsapp || 'sem telefone'}
               </div>
             </div>
@@ -122,11 +123,4 @@ export default function ClienteDetail() {
 }
 
 function soNumeros(s = '') { return s.replace(/\D/g, '') }
-function idade(nasc) {
-  if (!nasc) return null
-  const d = new Date(nasc); const hoje = new Date()
-  let a = hoje.getFullYear() - d.getFullYear()
-  if (hoje.getMonth() < d.getMonth() || (hoje.getMonth() === d.getMonth() && hoje.getDate() < d.getDate())) a--
-  return a >= 0 && a < 130 ? a : null
-}
 function dataBR(iso) { if (!iso) return ''; const d = new Date(iso.length <= 10 ? iso + 'T00:00:00' : iso); return d.toLocaleDateString('pt-BR') }

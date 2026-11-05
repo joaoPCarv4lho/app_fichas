@@ -8,9 +8,9 @@ import ErroCarga from '../components/ErroCarga.jsx'
 import { mensagemDeErro } from '../lib/erros.js'
 import { useConfirm } from '../components/ConfirmDialog.jsx'
 import { useToast } from '../components/Toast.jsx'
+import { hojeISO } from '../lib/agenda.js'
 import { useAuth } from '../auth/AuthContext.jsx'
 
-const hoje = () => new Date().toISOString().slice(0, 10)
 
 export default function AtendimentoForm() {
   const { id, atId } = useParams()
@@ -22,7 +22,7 @@ export default function AtendimentoForm() {
   const editando = Boolean(atId)
 
   const [tipo, setTipo] = useState(params.get('tipo') === 'manicure' ? 'manicure' : 'pele')
-  const [data, setData] = useState(hoje())
+  const [data, setData] = useState(hojeISO())
   const [servico, setServico] = useState('')
   const [obs, setObs] = useState('')
   const [fotos, setFotos] = useState([]) // { key, momento, preview, blob?, path? }
