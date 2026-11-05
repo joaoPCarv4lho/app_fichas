@@ -74,4 +74,5 @@ Use só comandos que existem; não invente scripts.
 - Fotos: bucket `fotos`, pasta = `user_id` (a RLS depende disso).
 - SQL do banco é manual (SQL Editor do Supabase) em `supabase/*.sql`; não rode migração por conta própria.
 - Deploy manual via Vercel CLI: rode `npm run check` antes; depois `npm run build` → `cp vercel.json dist/` → `cd dist && vercel deploy --prod --yes`. Exige autorização do usuário; nunca por conta própria.
+- Erros mostrados à usuária passam por `mensagemDeErro` (`src/lib/erros.js`); nunca `error.message` cru; sem `alert`/`confirm` nativos (use `useConfirm` e `useToast`).
 - Nunca versionar `.env`, chaves ou tokens.

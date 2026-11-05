@@ -57,6 +57,13 @@ UI (páginas) → `src/lib/db.js` → Supabase. As páginas chamam funções com
 
 SQL manual, colado no SQL Editor do Supabase, nesta ordem: `supabase/schema.sql`, `roles.sql`, `agenda.sql`, `agenda-link.sql`. Cada arquivo pode ser reexecutado sozinho. O `schema.sql` não cria políticas (desde 2026-11-05 não recria mais `*_todas`): sem `roles.sql` o RLS fica ligado e ninguém acessa nada. Não há ferramenta de migração.
 
+## Erros e feedback
+
+- `mensagemDeErro(e)` (`src/lib/erros.js`) converte qualquer erro em texto pt-BR (sem conexão, sessão expirada, permissão, duplicado, genérico) e registra o original no console.
+- Toast de erro: `useToast()(msg, false)` mostra faixa vermelha com `role="alert"` por 5 s.
+- `useConfirm()` (`ConfirmDialog.jsx`) devolve `confirmar({ titulo, texto, ok, perigo })` → Promise<boolean>; substitui `confirm()`/`alert()` nativos.
+- `ErrorBoundary` envolve o `App` e mostra "Algo deu errado" + Recarregar. Limitação do React: não captura erros em handlers de evento nem código assíncrono; esses usam `mensagemDeErro` + Toast.
+
 ## Decisões
 
 - **PWA em vez de app nativo (Capacitor).** A usuária quer ícone e tela cheia em Android e iPhone; o desenvolvimento é em Windows, onde não dá para gerar build de iOS. Revisar se surgir necessidade de loja de apps ou recursos nativos.
