@@ -5,6 +5,8 @@ export default function SignaturePad({ value, onChange }) {
   const canvasRef = useRef(null)
   const drawing = useRef(false)
   const last = useRef(null)
+  const moved = useRef(false)
+  const emitido = useRef(null) // último dataURL enviado ao pai
   const [hasInk, setHasInk] = useState(Boolean(value))
 
   useEffect(() => {
@@ -19,13 +21,22 @@ export default function SignaturePad({ value, onChange }) {
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
     ctx.strokeStyle = '#2e2a2b'
-    // se já existe assinatura salva, desenha
+  }, [])
+
+  // value vindo de fora (ficha carregada depois da montagem): redesenha. O que o próprio pad emitiu não redesenha.
+  useEffect(() => {
+    setHasInk(Boolean(value))
+    if (value === emitido.current) return
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    const rect = canvas.getBoundingClientRect()
+    ctx.clearRect(0, 0, rect.width, rect.height)
     if (value) {
       const img = new Image()
       img.onload = () => ctx.drawImage(img, 0, 0, rect.width, rect.height)
       img.src = value
     }
-  }, [])
+  }, [value])
 
   const pos = (e) => {
     const rect = canvasRef.current.getBoundingClientRect()
@@ -36,6 +47,7 @@ export default function SignaturePad({ value, onChange }) {
   const start = (e) => {
     e.preventDefault()
     drawing.current = true
+    moved.current = false
     last.current = pos(e)
   }
   const move = (e) => {
@@ -48,12 +60,15 @@ export default function SignaturePad({ value, onChange }) {
     ctx.lineTo(p.x, p.y)
     ctx.stroke()
     last.current = p
+    moved.current = true
     setHasInk(true)
   }
   const end = () => {
     if (!drawing.current) return
     drawing.current = false
-    onChange(canvasRef.current.toDataURL('image/png'))
+    if (!moved.current) return // toque sem traço não conta como assinatura
+    emitido.current = canvasRef.current.toDataURL('image/png')
+    onChange(emitido.current)
   }
 
   const clear = () => {
@@ -61,6 +76,7 @@ export default function SignaturePad({ value, onChange }) {
     const ctx = canvas.getContext('2d')
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     setHasInk(false)
+    emitido.current = null
     onChange(null)
   }
 
