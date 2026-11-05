@@ -1,6 +1,6 @@
 # Qualidade
 
-Estado verificado em 2026-11-05 (Node 24, Windows; o projeto aceita Node 20+). Cada número abaixo vem de um comando rodado nesta data; o que não foi observado está marcado como pendente.
+Estado verificado em 2026-11-05 (Node 24, Windows; o projeto aceita Node 22+). Cada número abaixo vem de um comando rodado nesta data; o que não foi observado está marcado como pendente.
 
 ## Comandos
 

@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": { "node": ">=22" },
   "description": "App de fichas de anamnese para limpeza de pele/dermaplaning e manicure",
   "scripts": {
     "dev": "vite",

@@ -2,7 +2,7 @@
 
 ## Pré-requisitos
 
-- Node 20+ (testado no 24) e npm. O `package.json` declara `engines.node >=20` e o `.nvmrc` indica 24.
+- Node 22+ (testado no 24) e npm. O `package.json` declara `engines.node >=22` e o `.nvmrc` indica 24.
 - Um projeto Supabase (plano gratuito basta).
 
 ## Preparar

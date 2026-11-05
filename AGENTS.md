@@ -3,7 +3,7 @@
 ## Produto e stack
 
 - Produto e escopo: `PRODUCT.md`.
-- Stack: React 18, Vite 5, react-router-dom 6, Supabase (`@supabase/supabase-js`), `vite-plugin-pwa`, jsPDF. JavaScript puro (JSX), npm, Node 20+ (testado no 24), Windows.
+- Stack: React 18, Vite 5, react-router-dom 6, Supabase (`@supabase/supabase-js`), `vite-plugin-pwa`, jsPDF. JavaScript puro (JSX), npm, Node 22+ (testado no 24), Windows.
 - Preparação e validações: `docs/onboarding.md`, `docs/setup.md`.
 
 ## Comandos canônicos
