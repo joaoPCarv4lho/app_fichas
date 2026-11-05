@@ -203,12 +203,12 @@ Relatórios completos e privados no diretório irmão `..\app_fichas-private\rev
 
 Próxima ação proposta para cada um (todas dependem de o usuário aprovar escopo e momento):
 
-1. **Medium, `schema.sql` após `roles.sql` reabre delete para não-admin** (PostgreSQL e segurança, mesmo ponto): usuário roda `select tablename, policyname, cmd from pg_policies where schemaname='public';` no SQL Editor e informa o resultado; depois decidir se `schema.sql` deixa de criar as policies `*_todas`.
+1. **Medium, `schema.sql` após `roles.sql` reabre delete para não-admin** (PostgreSQL e segurança, mesmo ponto). **Conferido em 2026-11-05 pelo usuário (`pg_policies`): não está ativo.** `clientes`, `anamneses` e `atendimentos` têm só políticas separadas (`_select/_insert/_update/_delete`), sem `*_todas`; `agendamentos` tem `agendamentos_todas` (ALL), o esperado (a profissional pode excluir agendamento). **Resolvido na origem (2026-11-05):** `supabase/schema.sql` não cria mais `*_todas`; só `roles.sql` cria as políticas. Não precisa rodar nada no banco (as policies atuais já estão corretas); a mudança vale para reinstalações e reexecuções.
 2. **Medium, fotos de saúde ficam no Storage** após excluir cliente ou foto: tarefa própria para apagar objetos junto da exclusão e limpar órfãos (impacto LGPD; mexe em `db.js` e telas).
 3. **Medium, re-salvar a anamnese regrava termo atual com assinatura antiga:** tarefa própria para atualizar consentimento só quando a assinatura mudar.
 4. **Low (PostgreSQL e segurança):** referência cross-tenant de `cliente_id`, índices em FKs, `auth.uid()` sem `(select ...)`, checks de integridade, PIN sem limite de tentativas, `jspdf` e `react-router` teóricos, `serialize-javascript`/`source-map-js` só no build. Agrupar por tema e priorizar com o usuário.
 5. **Propostas confirmadas pelo revisor da Task 4 (só propostas, nada alterado):** `src/pages/AtendimentoForm.jsx:69-71` remove as fotos do Storage **antes** de apagar o atendimento no banco, então as fotos se perdem se a exclusão falhar (inverter a ordem ou tratar falha); `src/pages/Configuracoes.jsx:42` remove o PIN sem pedir o PIN atual (exigir confirmação).
-6. **Hipóteses abertas, só o usuário confirma no painel:** cadastro público do Supabase Auth ligado ou não; estado real de `pg_policies`; validade do JWT e política de senha.
+6. **Hipóteses abertas, só o usuário confirma no painel:** cadastro público do Supabase Auth ligado ou não; (`pg_policies` já conferido, ver item 1); validade do JWT e política de senha.
 
 ### 9.2 Instalações globais pendentes (precisam de autorização)
 

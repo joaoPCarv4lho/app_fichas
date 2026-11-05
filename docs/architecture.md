@@ -50,12 +50,12 @@ UI (páginas) → `src/lib/db.js` → Supabase. As páginas chamam funções com
 - `anamneses`: uma por cliente e tipo (`unique (cliente_id, tipo)`), `respostas` em jsonb, consentimento (texto, assinatura em data URL, data).
 - `atendimentos`: por visita, `fotos` em jsonb (`path` + `momento` antes/depois), `data`.
 - `agendamentos`: data, hora, `duracao_min`, status, cliente ou nome/telefone avulsos, `atendimento_id` opcional. `cliente_id` é `on delete set null` (excluir a cliente mantém o agendamento).
-- Todas têm `user_id not null` com RLS `auth.uid() = user_id`. Em clientes, anamneses e atendimentos, excluir exige `app_metadata.role = 'admin'` (desde que `roles.sql` tenha sido aplicado por último); em agendamentos o dono pode excluir.
+- Todas têm `user_id not null` com RLS `auth.uid() = user_id`. Em clientes, anamneses e atendimentos, excluir exige `app_metadata.role = 'admin'` (políticas criadas por `roles.sql`); em agendamentos o dono pode excluir.
 - Storage: bucket privado `fotos`; caminho `<user_id>/<uuid>.jpg`; as políticas comparam a primeira pasta com `auth.uid()`. As fotos são lidas por URL assinada.
 
 ## Migrações
 
-SQL manual, colado no SQL Editor do Supabase, nesta ordem: `supabase/schema.sql`, `roles.sql`, `agenda.sql`, `agenda-link.sql`. Cada arquivo pode ser reexecutado sozinho, **mas** reexecutar `schema.sql` recria as políticas permissivas `*_todas` (`for all`); depois dele, reaplique `roles.sql`, senão a profissional volta a poder excluir clientes e registros de saúde. Não há ferramenta de migração.
+SQL manual, colado no SQL Editor do Supabase, nesta ordem: `supabase/schema.sql`, `roles.sql`, `agenda.sql`, `agenda-link.sql`. Cada arquivo pode ser reexecutado sozinho. O `schema.sql` não cria políticas (desde 2026-11-05 não recria mais `*_todas`): sem `roles.sql` o RLS fica ligado e ninguém acessa nada. Não há ferramenta de migração.
 
 ## Decisões
 
