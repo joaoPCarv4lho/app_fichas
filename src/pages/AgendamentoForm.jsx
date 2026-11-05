@@ -7,6 +7,10 @@ import {
 } from '../lib/db.js'
 import { DURACOES, hojeISO, hhmm, conflita } from '../lib/agenda.js'
 
+const pad = (n) => String(n).padStart(2, '0')
+const HORAS = Array.from({ length: 24 }, (_, i) => pad(i))
+const MINUTOS = Array.from({ length: 12 }, (_, i) => pad(i * 5))
+
 export default function AgendamentoForm() {
   const { id } = useParams()
   const editando = Boolean(id)
@@ -55,7 +59,10 @@ export default function AgendamentoForm() {
     return doDia.some((o) => o.status !== 'cancelado' && conflita(atual, o))
   }, [data, hora, duracao, doDia])
 
-  const setDur = (v) => setDuracao(Math.max(5, Math.min(600, Math.round((Number(v) || 0) / 5) * 5)))
+  const [hh, mm] = hora.split(':')
+  const minutos = MINUTOS.includes(mm) ? MINUTOS : [...MINUTOS, mm].sort()
+
+  const setDur =(v) => setDuracao(Math.max(5, Math.min(600, Math.round((Number(v) || 0) / 5) * 5)))
 
   const salvar = async () => {
     setErro('')
@@ -138,7 +145,15 @@ export default function AgendamentoForm() {
             </div>
             <div className="field" style={{ marginBottom: 0 }}>
               <label>Início</label>
-              <input type="time" className="time-input" value={hora} onChange={(e) => setHora(e.target.value)} />
+              <div className="timesel">
+                <select aria-label="Hora" value={hh} onChange={(e) => setHora(`${e.target.value}:${mm}`)}>
+                  {HORAS.map((h) => <option key={h} value={h}>{h}</option>)}
+                </select>
+                <span>:</span>
+                <select aria-label="Minuto" value={mm} onChange={(e) => setHora(`${hh}:${e.target.value}`)}>
+                  {minutos.map((m) => <option key={m} value={m}>{m}</option>)}
+                </select>
+              </div>
             </div>
           </div>
 
