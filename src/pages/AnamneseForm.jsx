@@ -6,6 +6,7 @@ import SignaturePad from '../components/SignaturePad.jsx'
 import { FICHAS, TERMO_CONSENTIMENTO } from '../data/fichaSchemas.js'
 import { getCliente, getAnamnese, saveAnamnese } from '../lib/db.js'
 import { useToast } from '../components/Toast.jsx'
+import { SkeletonDetail } from '../components/Skeleton.jsx'
 
 export default function AnamneseForm() {
   const { id, tipo } = useParams()
@@ -19,18 +20,28 @@ export default function AnamneseForm() {
   const [assinatura, setAssinatura] = useState(null)
   const [busy, setBusy] = useState(false)
   const [erro, setErro] = useState('')
+  // O formulário só aparece com cliente e ficha existente carregados: salvar antes sobrescreveria a ficha real com respostas vazias.
+  const [carregado, setCarregado] = useState(false)
+  const [erroCarga, setErroCarga] = useState(false)
+  const [tentativa, setTentativa] = useState(0)
 
   useEffect(() => {
-    if (!schema) return
+    if (!FICHAS[tipo]) return
+    let ativo = true
     Promise.all([getCliente(id), getAnamnese(id, tipo)]).then(([c, a]) => {
+      if (!ativo) return
       setCliente(c)
       if (a) {
         setExistente(a)
         setRespostas(a.respostas || {})
         setAssinatura(a.consent_assinatura || null)
       }
-    }).catch((e) => setErro(e.message))
-  }, [id, tipo])
+      setCarregado(true)
+    }).catch(() => { if (ativo) setErroCarga(true) })
+    return () => { ativo = false }
+  }, [id, tipo, tentativa])
+
+  const tentarDeNovo = () => { setErroCarga(false); setTentativa((n) => n + 1) }
 
   if (!schema) return <div className="app"><TopBar title="Ficha" /><div className="content"><div className="notice">Tipo de ficha inválido.</div></div></div>
 
@@ -58,6 +69,14 @@ export default function AnamneseForm() {
     <div className="app">
       <TopBar title={`${schema.emoji} ${schema.titulo}`} />
       <div className="content">
+        {erroCarga && (
+          <>
+            <div className="notice">Não foi possível carregar a ficha. Verifique a conexão e tente de novo.</div>
+            <button type="button" className="btn secondary" onClick={tentarDeNovo}>Tentar de novo</button>
+          </>
+        )}
+        {!carregado && !erroCarga && <SkeletonDetail />}
+        {carregado && (<>
         {cliente && <p className="muted" style={{ marginTop: 0 }}>Cliente: <strong>{cliente.nome}</strong></p>}
 
         <DynamicForm schema={schema} value={respostas} onChange={setRespostas} />
@@ -75,6 +94,7 @@ export default function AnamneseForm() {
             <button className="btn" disabled={busy} onClick={salvar}>{busy ? 'Salvando…' : 'Salvar ficha'}</button>
           </div>
         </div>
+        </>)}
       </div>
     </div>
   )
