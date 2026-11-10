@@ -9,6 +9,7 @@ import {
   listClientes, listAgendamentos, getAgendamento, saveAgendamento,
 } from '../lib/db.js'
 import { DURACOES, hojeISO, hhmm, conflita, cruzaMeiaNoite } from '../lib/agenda.js'
+import { TIPOS } from '../data/fichaSchemas.js'
 
 const pad = (n) => String(n).padStart(2, '0')
 const HORAS = Array.from({ length: 24 }, (_, i) => pad(i))
@@ -156,8 +157,9 @@ export default function AgendamentoForm() {
             <div className="field">
               <label>Tipo</label>
               <div className="simnao">
-                <button type="button" className={tipo === 'pele' ? 'on-sim' : ''} onClick={() => setTipo(tipo === 'pele' ? '' : 'pele')}>🧖 Pele</button>
-                <button type="button" className={tipo === 'manicure' ? 'on-sim' : ''} onClick={() => setTipo(tipo === 'manicure' ? '' : 'manicure')}>💅 Manicure</button>
+                {TIPOS.map((f) => (
+                  <button key={f.key} type="button" className={tipo === f.key ? 'on-sim' : ''} onClick={() => setTipo(tipo === f.key ? '' : f.key)}>{f.emoji} {f.nome}</button>
+                ))}
               </div>
             </div>
             <div className="field" style={{ marginBottom: 0 }}>

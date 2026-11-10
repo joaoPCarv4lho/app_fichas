@@ -25,7 +25,7 @@ src/
   components/              DynamicForm, InstallCard, PhotoCapture, SignaturePad,
                            Skeleton, TabBar, Toast, TopBar
   styles.css               estilos e tokens
-supabase/                  schema.sql, roles.sql, agenda.sql, agenda-link.sql
+supabase/                  schema.sql, roles.sql, agenda.sql, agenda-link.sql, drenagem.sql
 scripts/check-db.mjs       valida .env e banco (npm run check:db)
 scripts/deploy.mjs         deploy manual (npm run deploy; só age com --prod)
 public/                    ícones do PWA e favicon
@@ -64,7 +64,7 @@ UI (páginas) → `src/lib/db.js` → Supabase. As páginas chamam funções com
 
 ## Migrações
 
-SQL manual, colado no SQL Editor do Supabase, nesta ordem: `supabase/schema.sql`, `roles.sql`, `agenda.sql`, `agenda-link.sql`. Cada arquivo pode ser reexecutado sozinho. O `schema.sql` não cria políticas (desde 2026-11-05 não recria mais `*_todas`): sem `roles.sql` o RLS fica ligado e ninguém acessa nada. Não há ferramenta de migração.
+SQL manual, colado no SQL Editor do Supabase, nesta ordem: `supabase/schema.sql`, `roles.sql`, `agenda.sql`, `agenda-link.sql`, `drenagem.sql`. Cada arquivo pode ser reexecutado sozinho. O `schema.sql` não cria políticas (desde 2026-11-05 não recria mais `*_todas`): sem `roles.sql` o RLS fica ligado e ninguém acessa nada. Não há ferramenta de migração.
 
 ## Erros e feedback
 

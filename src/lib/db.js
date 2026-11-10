@@ -44,8 +44,10 @@ export async function deleteCliente(cliente) {
 }
 
 // ---------- Anamneses ----------
+// Leve: só o que a lista de fichas mostra. A assinatura base64 (dezenas de KB)
+// e as respostas ficam de fora; o PDF e a edição buscam a ficha completa.
 export async function getAnamneses(clienteId) {
-  const { data, error } = await supabase.from('anamneses').select('*').eq('cliente_id', clienteId)
+  const { data, error } = await supabase.from('anamneses').select('id, tipo, updated_at').eq('cliente_id', clienteId)
   if (error) throw error
   return data
 }

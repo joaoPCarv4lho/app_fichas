@@ -7,6 +7,7 @@ import { useToast } from '../components/Toast.jsx'
 import { mensagemDeErro } from '../lib/erros.js'
 import { listAgendamentos } from '../lib/db.js'
 import { STATUS, hojeISO, addDias, rotuloDia, hhmm, fimDe } from '../lib/agenda.js'
+import { FICHAS } from '../data/fichaSchemas.js'
 
 const ABERTOS = ['agendado', 'confirmado']
 const FECHADOS = ['realizado', 'cancelado', 'faltou']
@@ -139,7 +140,7 @@ function AgItem({ a, onClick }) {
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nome}</div>
         <div className="meta" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {a.tipo && <span className={`badge ${a.tipo}`} style={{ marginRight: 6 }}>{a.tipo === 'pele' ? 'Pele' : 'Manicure'}</span>}
+          {a.tipo && <span className={`badge ${a.tipo}`} style={{ marginRight: 6 }}>{FICHAS[a.tipo]?.nome || a.tipo}</span>}
           {a.servico || 'Atendimento'}
         </div>
       </div>

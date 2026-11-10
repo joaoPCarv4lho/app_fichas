@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import TopBar from '../components/TopBar.jsx'
-import { getCliente, getAnamneses, listAtendimentos, deleteCliente, removerFotos } from '../lib/db.js'
+import { getCliente, getAnamneses, getAnamnese, listAtendimentos, deleteCliente, removerFotos } from '../lib/db.js'
 import { FICHAS } from '../data/fichaSchemas.js'
 import { hojeISO, idadeDe } from '../lib/agenda.js'
 import { avatarColor, iniciais } from '../lib/ui.js'
@@ -49,10 +49,14 @@ export default function ClienteDetail() {
     catch (e) { toast(mensagemDeErro(e), false) }
   }
 
-  async function baixarPdf(a, f) {
+  async function baixarPdf(f) {
     try {
-      const { gerarPdfAnamnese } = await import('../lib/pdf.js') // jsPDF só baixa quando precisa
-      gerarPdfAnamnese(cliente, a, f)
+      // a lista vem leve (sem respostas/assinatura); busca a ficha completa p/ o PDF
+      const [{ gerarPdfAnamnese }, full] = await Promise.all([
+        import('../lib/pdf.js'), // jsPDF só baixa quando precisa
+        getAnamnese(id, f.key),
+      ])
+      gerarPdfAnamnese(cliente, full, f)
     }
     catch (e) { toast(mensagemDeErro(e), false) }
   }
@@ -108,7 +112,7 @@ export default function ClienteDetail() {
                 <button className="btn secondary sm" onClick={() => navigate(`/cliente/${id}/anamnese/${f.key}`)}>
                   {a ? 'Ver / editar' : 'Preencher'}
                 </button>
-                {a && <button className="btn ghost sm" onClick={() => baixarPdf(a, f)}>📄 PDF</button>}
+                {a && <button className="btn ghost sm" onClick={() => baixarPdf(f)}>📄 PDF</button>}
               </div>
             </div>
           )
@@ -122,7 +126,7 @@ export default function ClienteDetail() {
             <div style={{ flex: 1 }}>
               <div className="row" style={{ gap: 8 }}>
                 <strong>{dataBR(at.data)}</strong>
-                <span className={`badge ${at.tipo}`}>{at.tipo === 'pele' ? 'Pele' : 'Manicure'}</span>
+                <span className={`badge ${at.tipo}`}>{FICHAS[at.tipo]?.nome || at.tipo}</span>
               </div>
               <div className="muted" style={{ fontSize: 14 }}>{at.servico || 'Atendimento'}{at.fotos?.length ? ` · ${at.fotos.length} foto(s)` : ''}</div>
             </div>

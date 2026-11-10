@@ -9,6 +9,7 @@ import { mensagemDeErro } from '../lib/erros.js'
 import { useConfirm } from '../components/ConfirmDialog.jsx'
 import { useToast } from '../components/Toast.jsx'
 import { hojeISO } from '../lib/agenda.js'
+import { FICHAS, TIPOS } from '../data/fichaSchemas.js'
 import { useAuth } from '../auth/AuthContext.jsx'
 
 
@@ -27,7 +28,7 @@ export default function AtendimentoForm() {
   // paths salvos ao abrir: os que a usuária removeu do formulário são apagados do Storage após salvar
   const originais = useRef([])
 
-  const [tipo, setTipo] = useState(params.get('tipo') === 'manicure' ? 'manicure' : 'pele')
+  const [tipo, setTipo] = useState(FICHAS[params.get('tipo')] ? params.get('tipo') : 'pele')
   const [data, setData] = useState(hojeISO())
   const [servico, setServico] = useState('')
   const [obs, setObs] = useState('')
@@ -120,8 +121,9 @@ export default function AtendimentoForm() {
             <div className="field">
               <label>Tipo de serviço</label>
               <div className="simnao">
-                <button type="button" className={tipo === 'pele' ? 'on-sim' : ''} onClick={() => setTipo('pele')}>🧖 Pele</button>
-                <button type="button" className={tipo === 'manicure' ? 'on-sim' : ''} onClick={() => setTipo('manicure')}>💅 Manicure</button>
+                {TIPOS.map((f) => (
+                  <button key={f.key} type="button" className={tipo === f.key ? 'on-sim' : ''} onClick={() => setTipo(f.key)}>{f.emoji} {f.nome}</button>
+                ))}
               </div>
             </div>
             <div className="field">

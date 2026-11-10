@@ -25,6 +25,7 @@
 export const FICHA_PELE = {
   key: 'pele',
   titulo: 'Limpeza de Pele / Dermaplaning',
+  nome: 'Pele',
   emoji: '🧖',
   cor: '#b76e79',
   secoes: [
@@ -74,6 +75,7 @@ export const FICHA_PELE = {
 export const FICHA_MANICURE = {
   key: 'manicure',
   titulo: 'Manicure (gel, alongamento, etc.)',
+  nome: 'Manicure',
   emoji: '💅',
   cor: '#c9a227',
   secoes: [
@@ -116,10 +118,53 @@ export const FICHA_MANICURE = {
   ],
 }
 
+export const FICHA_DRENAGEM = {
+  key: 'drenagem',
+  titulo: 'Drenagem Linfática Manual',
+  nome: 'Drenagem',
+  emoji: '💧',
+  cor: '#2f7a5c',
+  secoes: [
+    {
+      titulo: 'Histórico de saúde',
+      campos: [
+        { id: 'condicoes', label: 'Possui alguma condição de saúde?', tipo: 'multi', opcoes: ['Hipertensão arterial', 'Diabetes', 'Problemas circulatórios/varizes', 'Trombose ou histórico de trombose', 'Problemas cardíacos', 'Problemas renais', 'Câncer (atual ou anterior)', 'Nenhuma'] },
+        { id: 'condicoes_outros', label: 'Outras condições', tipo: 'texto' },
+        { id: 'medicamentos', label: 'Faz uso de medicamentos?', tipo: 'sim_nao', detalheSe: 'sim', detalheLabel: 'Quais?' },
+        { id: 'alergias', label: 'Possui alergias?', tipo: 'sim_nao', detalheSe: 'sim', detalheLabel: 'Quais?' },
+        { id: 'gestante', label: 'Está gestante ou no pós-parto?', tipo: 'select', opcoes: ['Sim', 'Não', 'Não se aplica'] },
+        { id: 'cirurgia', label: 'Realizou cirurgia recentemente?', tipo: 'sim_nao', detalheSe: 'sim', detalheLabel: 'Qual e quando?' },
+        { id: 'inflamacao', label: 'Apresenta febre, infecção, feridas ou inflamação atualmente?', tipo: 'sim_nao' },
+      ],
+    },
+    {
+      titulo: 'Avaliação corporal',
+      campos: [
+        { id: 'objetivo', label: 'Objetivo da drenagem', tipo: 'multi', opcoes: ['Redução de edema/inchaço', 'Sensação de pernas pesadas', 'Pós-operatório (com liberação médica)', 'Bem-estar/relaxamento'] },
+        { id: 'objetivo_outros', label: 'Outro objetivo', tipo: 'texto' },
+        { id: 'regioes', label: 'Regiões a serem tratadas', tipo: 'multi', opcoes: ['Abdômen', 'Pernas', 'Braços', 'Corpo inteiro'] },
+        { id: 'sinais_alerta', label: 'Apresenta dor, inchaço súbito ou assimétrico, vermelhidão ou calor em alguma região?', tipo: 'sim_nao' },
+        { id: 'obs', label: 'Observações', tipo: 'textarea' },
+      ],
+    },
+    {
+      titulo: 'Registro do atendimento',
+      campos: [
+        { id: 'avaliacao', label: 'Avaliação', tipo: 'select', opcoes: ['Apto(a)', 'Necessita avaliação/liberação médica'] },
+        { id: 'procedimento', label: 'Procedimento realizado', tipo: 'texto' },
+      ],
+    },
+  ],
+}
+
 export const FICHAS = {
   pele: FICHA_PELE,
   manicure: FICHA_MANICURE,
+  drenagem: FICHA_DRENAGEM,
 }
+
+// Lista das fichas (para seletores de tipo de serviço).
+export const TIPOS = Object.values(FICHAS)
 
 // Texto do termo de consentimento (LGPD). AJUSTE com seus dados / orientação
 // jurídica. Use {NOME} para inserir o nome da cliente automaticamente.

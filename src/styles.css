@@ -189,6 +189,7 @@ a { color: var(--brand-strong); }
 .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: var(--r-pill); font-size: 11.5px; font-weight: 700; letter-spacing: .01em; }
 .badge.pele { background: var(--brand-050); color: var(--brand-strong); }
 .badge.manicure { background: var(--gold-050); color: #8a6d15; }
+.badge.drenagem { background: #e0ece6; color: #2f7a5c; }
 .badge.ok { background: #e6f4ec; color: #1f7a48; }
 
 .meta { color: var(--muted); font-size: 13.5px; }

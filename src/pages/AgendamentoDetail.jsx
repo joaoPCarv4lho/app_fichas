@@ -7,6 +7,7 @@ import ErroCarga from '../components/ErroCarga.jsx'
 import { mensagemDeErro } from '../lib/erros.js'
 import { getAgendamento, patchAgendamento, deleteAgendamento } from '../lib/db.js'
 import { STATUS, hhmm, fimDe, rotuloDia } from '../lib/agenda.js'
+import { FICHAS } from '../data/fichaSchemas.js'
 
 export default function AgendamentoDetail() {
   const { id } = useParams()
@@ -83,7 +84,7 @@ export default function AgendamentoDetail() {
             <span className={`badge ${st.cls}`}>{st.label}</span>
           </div>
           <div className="row" style={{ marginTop: 10, gap: 6 }}>
-            {ag.tipo && <span className={`badge ${ag.tipo}`}>{ag.tipo === 'pele' ? '🧖 Pele' : '💅 Manicure'}</span>}
+            {ag.tipo && FICHAS[ag.tipo] && <span className={`badge ${ag.tipo}`}>{FICHAS[ag.tipo].emoji} {FICHAS[ag.tipo].nome}</span>}
             {ag.servico && <span className="meta">{ag.servico}</span>}
           </div>
           {!ag.cliente_id && <div className="hint" style={{ marginTop: 8 }}>Cliente avulsa (sem ficha cadastrada)</div>}

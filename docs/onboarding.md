@@ -14,7 +14,7 @@ npm ci
 (`npm ci` instala exatamente o `package-lock.json`.)
 
 1. Copie `.env.example` para `.env` e preencha `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` (Supabase: Project Settings → API). O `.env` não é versionado.
-2. No SQL Editor do Supabase, rode nesta ordem o conteúdo de: `supabase/schema.sql`, `supabase/roles.sql`, `supabase/agenda.sql`, `supabase/agenda-link.sql`. Cada arquivo pode ser reexecutado sozinho. O `schema.sql` só cria tabelas, liga o RLS e cria o bucket; as políticas de acesso vêm do `roles.sql` (sem ele ninguém acessa nada).
+2. No SQL Editor do Supabase, rode nesta ordem o conteúdo de: `supabase/schema.sql`, `supabase/roles.sql`, `supabase/agenda.sql`, `supabase/agenda-link.sql`, `supabase/drenagem.sql`. Cada arquivo pode ser reexecutado sozinho. O `schema.sql` só cria tabelas, liga o RLS e cria o bucket; as políticas de acesso vêm do `roles.sql` (sem ele ninguém acessa nada).
 3. Em Authentication, desabilite o cadastro público (signup) e crie os 2 usuários manualmente (e-mail e senha).
 4. Torne um deles admin: Authentication → Users → usuário → Raw App Meta Data = `{"role":"admin"}`. O outro fica sem papel (profissional).
 5. Confira:

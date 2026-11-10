@@ -31,9 +31,10 @@ npm install
    cole e clique em **Run**. Isso cria as tabelas, a segurança (RLS) e o
    depósito de fotos.
 4. Repita com [`supabase/roles.sql`](supabase/roles.sql),
-   [`supabase/agenda.sql`](supabase/agenda.sql) e
-   [`supabase/agenda-link.sql`](supabase/agenda-link.sql), nessa ordem (papéis,
-   agenda e vínculo agendamento-atendimento).
+   [`supabase/agenda.sql`](supabase/agenda.sql),
+   [`supabase/agenda-link.sql`](supabase/agenda-link.sql) e
+   [`supabase/drenagem.sql`](supabase/drenagem.sql), nessa ordem (papéis,
+   agenda, vínculo agendamento-atendimento e a ficha de drenagem linfática).
 
 ### 3. Ligar o app ao Supabase
 1. No Supabase, vá em **Project Settings → API**.
